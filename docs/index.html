@@ -116,7 +116,7 @@
             <li>Sincronizar automáticamente datos entre dispositivos mediante Firebase</li>
             <li>Generar reportes y recordatorios de mantenimiento</li>
             <li>Monitorear fechas de vencimiento y enviar alertas de renovación de documentos</li>
-            <li>Administrar su plan de suscripción (Gratis, Básico, Pro o Empresarial)</li>
+            <li>Administrar su plan de suscripción</li>
             <li>Procesar pagos de suscripciones a través de Google Play</li>
         </ul>
 
@@ -126,9 +126,11 @@
 
         <h2>4. Almacenamiento de Datos</h2>
         
-        <h3>4.1 Almacenamiento Local</h3> mediante SQLite</li>
-            <li>Las imágenes y documentos se guardan en el almacenamiento interno de la aplicación</li>
-            <li>Proporciona acceso sin conexión a sus datos</li>
+        <h3>4.1 Almacenamiento Local</h3>
+        <ul>
+            <li>Los datos se almacenan localmente en su dispositivo en formato JSON</li>
+            <li>Las imágenes y documentos se guardan en el directorio privado de la aplicación</li>
+            <li>Proporciona acceso sin conexión y respaldo local de sus datos</li>
         </ul>
 
         <h3>4.2 Almacenamiento en la Nube (Automático)</h3>
@@ -138,9 +140,7 @@
             <li>Los datos están protegidos con reglas de seguridad estrictas</li>
             <li>Solo usted puede acceder a sus propios datos mediante su cuenta autenticada</li>
             <li>Permite sincronización entre múltiples dispositivos</li>
-            <li>Backup automático en la nubecon Firebase Firestore y Firebase Storage</li>
-            <li>Los datos en Firebase están protegidos con reglas de seguridad</li>
-            <li>Solo los usuarios autorizados pueden acceder a estos datos</li>
+            <li>Backup automático en la nube</li>
         </ul>
 
         <h2>5. Seguridad de los Datos</h2>
@@ -181,16 +181,19 @@
                     <td>Almacenamiento</td>
                     <td>Guardar y leer imágenes/PDFs</td>
                     <td>Sí</td>
-                </tr>Autenticación y sincronización con Firebase</td>
-                    <td>Sí
+                </tr>
+                <tr>
                     <td>Internet</td>
-                    <td>Sincronizar con Firebase (opcional)</td>
-                    <td>No</td>
+                    <td>Autenticación y sincronización con Firebase</td>
+                    <td>Sí</td>
                 </tr>
             </tbody>
         </table>
 
-        <h2>8. Servicios de Terc Authentication</strong> (Google): Para autenticación de usuarios
+        <h2>8. Servicios de Terceros</h2>
+        <p>La aplicación utiliza los siguientes servicios de terceros:</p>
+        <ul>
+            <li><strong>Firebase Authentication</strong> (Google): Para autenticación de usuarios
                 <br>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a>
             </li>
             <li><strong>Firebase Firestore</strong> (Google): Para almacenamiento de datos en la nube
@@ -207,12 +210,23 @@
 
         <h2>9. Modelo de Suscripción</h2>
         <div class="highlight">
-            <p><strong>AutoGestión Max ofrece diferentes planes de suscripción:</strong></p>
+            <p><strong>AutoGestión Max ofrece 6 planes de suscripción basados en cantidad de vehículos:</strong></p>
             <ul>
-                <li><strong>Plan Gratuito:</strong> 1 vehículo, funcionalidades básicas</li>
-                <li><strong>Plan Básico:</strong> Hasta 5 vehículos, sincronización en la nube, backup automático</li>
-                <li><strong>Plan Pro:</strong> Hasta 20 vehículos, reportes avanzados, soporte prioritario</li>
-                <ancelación de Suscripción</h2>
+                <li><strong>1 Vehículo:</strong> Gratis - Funciona como prueba o demo</li>
+                <li><strong>2-5 Vehículos:</strong> $175 MXN por vehículo adicional - Ideal para microempresas, transporte escolar, mensajería local</li>
+                <li><strong>6-10 Vehículos:</strong> $165 MXN por vehículo adicional - Pequeñas empresas en crecimiento, incentivo por volumen</li>
+                <li><strong>11-20 Vehículos:</strong> $155 MXN por vehículo adicional - Empresas medianas, ya requieren orden más formal</li>
+                <li><strong>21-35 Vehículos:</strong> $145 MXN por vehículo adicional - Escala atractiva, margen alto y ahorro significativo</li>
+                <li><strong>36-50 Vehículos:</strong> $135 MXN por vehículo adicional - Límite superior antes de que empresas requieran sistemas GPS especializados</li>
+            </ul>
+            <p><strong>Nota importante:</strong> El primer vehículo es gratis en todos los planes. Solo se cobra por los vehículos adicionales.</p>
+            <p>Los pagos se procesan a través de Google Play Store. No almacenamos información de tarjetas de crédito.</p>
+        </div>
+
+        <h2>10. Cambios en la Política</h2>
+        <p>Podemos actualizar esta política ocasionalmente. Los cambios se notificarán mediante una actualización de la fecha de "Última actualización" en esta página.</p>
+
+        <h2>11. Cancelación de Suscripción</h2>
         <p>Puede cancelar su suscripción en cualquier momento a través de Google Play Store:</p>
         <ul>
             <li>Abra la aplicación Google Play Store</li>
@@ -221,29 +235,18 @@
             <li>Toque "Cancelar suscripción"</li>
         </ul>
         <p>Al cancelar, tendrá acceso a las funciones premium hasta el final del período de facturación actual.</p>
-3. Consentimiento</h2>
-        <p>Al crear una cuenta y2. Contacto</h2>
+
+        <h2>12. Contacto</h2>
         <div class="contact-info">
             <p>Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos en:</p>
             <ul>
                 <li><strong>Email:</strong> mtr123202@gmail.com</li>
-                <li><strong>Desarrollador:</strong> MahonDev
-        </div>
-
-        <h2>10. Cambios en la Política</h2>
-        <p>Podemos actualizar esta política ocasionalmente. Los cambios se notificarán mediante una actualización de la fecha de "Última actualización" en esta página.</p>
-
-        <h2>11. Contacto</h2>
-        <div class="contact-info">
-            <p>Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos en:</p>
-            <ul>
-                <li><strong>Email:</strong> [Su correo electrónico]</li>
-                <li><strong>Desarrollador:</strong> [Su nombre o empresa]</li>
+                <li><strong>Desarrollador:</strong> MahonDev</li>
             </ul>
         </div>
 
-        <h2>12. Consentimiento</h2>
-        <p>Al usar AutoGestión Max, usted consiente esta Política de Privacidad y acepta sus términos.</p>
+        <h2>13. Consentimiento</h2>
+        <p>Al crear una cuenta y usar AutoGestión Max, usted consiente esta Política de Privacidad y acepta sus términos.</p>
     </div>
 </body>
 </html>
