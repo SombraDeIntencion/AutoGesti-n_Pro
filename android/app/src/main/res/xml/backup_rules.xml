@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Incluir preferencias generales -->
+    <include domain="sharedpref" path="."/>
+    
+    <!-- Incluir archivos de la aplicación -->
+    <include domain="file" path="."/>
+    
+    <!-- Incluir base de datos -->
+    <include domain="database" path="."/>
+    
+    <!-- Excluir archivos sensibles del backup -->
+    <exclude domain="sharedpref" path="FlutterSecureStorage"/>
+    <exclude domain="database" path="vehicles.db"/>
+</full-backup-content>

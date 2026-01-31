@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221437183793",
+    "project_id": "autogestion-max",
+    "storage_bucket": "autogestion-max.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221437183793:android:04004fc2b44042b3acd210",
+        "android_client_info": {
+          "package_name": "com.mahondev.autogestionmax"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJK-0cDkVg5320IN1b7AZQ9GhqfXLWREo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

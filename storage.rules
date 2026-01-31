@@ -1,0 +1,30 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Función auxiliar para verificar autenticación
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Función para verificar si el usuario es el propietario
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Validar tipo de archivo permitido (imágenes y PDFs)
+    function isValidFileType() {
+      return request.resource.contentType.matches('image/.*') ||
+             request.resource.contentType == 'application/pdf';
+    }
+    
+    // Validar tamaño de archivo (máximo 10MB)
+    function isValidFileSize() {
+      return request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // ============================================
+    // ARCHIVOS DE AUTOGESTION MAX
+    // REQUIERE AUTENTICACIÓN PARA TODO
+    // ============================================
+    
+    // Archivos de usuarios autenticados de AutoGestión Max

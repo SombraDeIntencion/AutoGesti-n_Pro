@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Función auxiliar para verificar autenticación
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Función para verificar si el usuario es el propietario
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ============================================
+    // DATOS DE AUTOGESTION MAX
+    // REQUIERE AUTENTICACIÓN PARA TODO
+    // ============================================
+    
+    // Colección de usuarios de AutoGestión Max
+    match /autogestion_max/data/users/{userId} {
+      // Solo el usuario puede leer su propia información
+      allow read: if isOwner(userId);
+      
+      // Solo el usuario puede actualizar su propia información
+      allow update: if isOwner(userId);
+      
+      // La creación se permite durante el registro (AuthService)
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // No se permite eliminar usuarios desde el cliente
+      allow delete: if false;
+    }
+    
+    // Colección de vehículos - Cada usuario tiene su propia colección
+    match /autogestion_max/data/users/{userId}/vehicles/{vehicleId} {
+      // Solo el propietario puede leer sus vehículos
+      allow read: if isOwner(userId);
+      
+      // Solo el propietario puede crear vehículos
+      // Validar estructura básica y límite de vehículos
+      allow create: if isOwner(userId) &&
+                       request.resource.data.keys().hasAll(['id', 'name']) &&
+                       request.resource.data.id is string &&
+                       request.resource.data.name is string;
+      
+      // Solo el propietario puede actualizar sus vehículos
+      allow update: if isOwner(userId) &&
+                       request.resource.data.id == resource.data.id;
+      
+      // Solo el propietario puede eliminar sus vehículos
+      allow delete: if isOwner(userId);
+    }
+    
+    // Colección de suscripciones (para registrar compras)
+    match /autogestion_max/data/users/{userId}/subscriptions/{subscriptionId} {
+      // Solo el usuario puede leer sus suscripciones
+      allow read: if isOwner(userId);
+      
+      // Solo el servidor puede escribir suscripciones (mediante Cloud Functions)
+      allow write: if false;
+    }
+  }
+}

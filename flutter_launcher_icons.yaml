@@ -1,0 +1,31 @@
+# Configuración de flutter_launcher_icons para AutoGestión Max
+# Coloca esta configuración al final del archivo pubspec.yaml
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  min_sdk_android: 21
+  
+  # Adaptive icon para Android (Material You)
+  adaptive_icon_background: "#0088CC"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  
+  # Configuración web
+  web:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    background_color: "#0088CC"
+    theme_color: "#0088CC"
+  
+  # Configuración Windows
+  windows:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    icon_size: 256
+
+# INSTRUCCIONES:
+# 1. Crea el archivo app_icon.png en assets/images/ (1024x1024px)
+# 2. Ejecuta: flutter pub add dev:flutter_launcher_icons
+# 3. Ejecuta: flutter pub run flutter_launcher_icons
+# 4. Los iconos se generarán automáticamente para todas las plataformas

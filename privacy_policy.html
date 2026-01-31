@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Política de Privacidad - AutoGestión Pro</title>
+    <title>Política de Privacidad - AutoGestión Max</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -70,11 +70,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Política de Privacidad - AutoGestión Pro</h1>
-        <p class="update-date"><strong>Última actualización:</strong> 28 de enero de 2026</p>
+        <h1>Política de Privacidad - AutoGestión Max</h1>
+        <p class="update-date"><strong>Última actualización:</strong> 30 de enero de 2026</p>
 
         <h2>1. Introducción</h2>
-        <p>Esta Política de Privacidad describe cómo AutoGestión Pro ("nosotros", "la aplicación") recopila, usa y protege la información cuando utiliza nuestra aplicación móvil de gestión de flotilla de vehículos.</p>
+        <p>Esta Política de Privacidad describe cómo AutoGestión Max ("nosotros", "la aplicación") recopila, usa y protege la información cuando utiliza nuestra aplicación móvil de gestión de flotilla de vehículos.</p>
 
         <h2>2. Información que Recopilamos</h2>
         
@@ -84,7 +84,8 @@
             <li>Fotografías de vehículos</li>
             <li>Información de mantenimiento</li>
             <li>Documentos relacionados (seguro, tarjeta de circulación, contratos)</li>
-            <li>Información del conductor</li>
+            <li>Fechas de vencimiento de documentos</li>
+            <li>Información del conductor (nombre, teléfono, correo electrónico)</li>
         </ul>
 
         <h3>2.2 Información Técnica</h3>
@@ -98,6 +99,7 @@
             <li><strong>Cámara:</strong> Para tomar fotografías de vehículos y documentos</li>
             <li><strong>Almacenamiento:</strong> Para guardar y acceder a imágenes y documentos PDF</li>
             <li><strong>Internet:</strong> Para sincronización con Firebase (opcional)</li>
+            <li><strong>Teléfono:</strong> Para facilitar llamadas telefónicas al conductor desde la aplicación (no se realizan llamadas sin su consentimiento explícito)</li>
         </ul>
 
         <h2>3. Cómo Usamos la Información</h2>
@@ -107,6 +109,8 @@
             <li>Almacenar documentos e imágenes relacionadas con los vehículos</li>
             <li>Generar reportes y recordatorios de mantenimiento</li>
             <li>Sincronizar datos entre dispositivos (cuando Firebase está habilitado)</li>
+            <li>Monitorear fechas de vencimiento y enviar alertas de renovación de documentos</li>
+            <li>Facilitar la comunicación con conductores mediante llamadas telefónicas (solo cuando usted lo solicita explícitamente)</li>
         </ul>
 
         <div class="highlight">
@@ -130,13 +134,32 @@
         </ul>
 
         <h2>5. Seguridad de los Datos</h2>
-        <p>Implementamos medidas de seguridad para proteger su información:</p>
+        <p>Implementamos múltiples capas de medidas de seguridad para proteger su información:</p>
+        
+        <h3>5.1 Seguridad Local</h3>
         <ul>
-            <li>Almacenamiento cifrado en el dispositivo</li>
-            <li>Comunicaciones seguras con Firebase (HTTPS)</li>
-            <li>Autenticación requerida para acceso a datos en la nube</li>
-            <li>Reglas de seguridad estrictas en Firebase</li>
-            <li>Backup configurado con exclusión de datos sensibles</li>
+            <li>Almacenamiento cifrado en el dispositivo mediante SQLite con cifrado</li>
+            <li>Base de datos local protegida por el sistema de seguridad de Android</li>
+            <li>Datos almacenados en el espacio privado de la aplicación (no accesibles por otras apps)</li>
+            <li>Caché de imágenes protegido en directorio privado</li>
+        </ul>
+        
+        <h3>5.2 Seguridad en la Nube (Firebase)</h3>
+        <ul>
+            <li>Comunicaciones seguras mediante HTTPS/TLS 1.3</li>
+            <li>Autenticación obligatoria mediante Firebase Authentication</li>
+            <li>Reglas de seguridad de Firestore que garantizan acceso solo a datos propios</li>
+            <li>Firebase Storage con validación de tipos de archivo y tamaño</li>
+            <li>Copias de seguridad automáticas con cifrado en reposo</li>
+        </ul>
+        
+        <h3>5.3 Seguridad de la Aplicación</h3>
+        <ul>
+            <li>Ofuscación de código en versiones de producción (ProGuard/R8)</li>
+            <li>Validación de entradas del usuario</li>
+            <li>Manejo seguro de credenciales (nunca en texto plano)</li>
+            <li>Gestión de permisos según principio de mínimo privilegio</li>
+            <li>Actualizaciones de seguridad regulares de dependencias</li>
         </ul>
 
         <h2>6. Sus Derechos</h2>
@@ -202,13 +225,14 @@
         <div class="contact-info">
             <p>Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos en:</p>
             <ul>
-                <li><strong>Email:</strong> [Su correo electrónico]</li>
-                <li><strong>Desarrollador:</strong> [Su nombre o empresa]</li>
+                <li><strong>Email:</strong> autogestionmax@mahondev.com</li>
+                <li><strong>Desarrollador:</strong> MahonDev</li>
+                <li><strong>Package ID:</strong> com.mahondev.autogestionmax</li>
             </ul>
         </div>
 
         <h2>12. Consentimiento</h2>
-        <p>Al usar AutoGestión Pro, usted consiente esta Política de Privacidad y acepta sus términos.</p>
+        <p>Al usar AutoGestión Max, usted consiente esta Política de Privacidad y acepta sus términos.</p>
     </div>
 </body>
 </html>
