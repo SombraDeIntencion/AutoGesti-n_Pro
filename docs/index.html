@@ -94,23 +94,30 @@
             <li>Información del dispositivo</li>
         </ul>
 
-        <h3>2.3 Permisos Utilizados</h3>
+        <h3>2.3 Información de Autenticación</h3>
+        <ul>
+            <li>Correo electrónico y contraseña para crear cuenta</li>
+            <li>ID único de usuario generado por Firebase Authentication</li>
+        </ul>
+
+        <h3>2.4 Permisos Utilizados</h3>
         <ul>
             <li><strong>Cámara:</strong> Para tomar fotografías de vehículos y documentos</li>
             <li><strong>Almacenamiento:</strong> Para guardar y acceder a imágenes y documentos PDF</li>
-            <li><strong>Internet:</strong> Para sincronización con Firebase (opcional)</li>
-            <li><strong>Teléfono:</strong> Para facilitar llamadas telefónicas al conductor desde la aplicación (no se realizan llamadas sin su consentimiento explícito)</li>
+            <li><strong>Internet:</strong> Requerido para autenticación, sincronización con Firebase y funciones de la nube</li>
         </ul>
 
         <h2>3. Cómo Usamos la Información</h2>
         <p>La información recopilada se utiliza exclusivamente para:</p>
         <ul>
+            <li>Autenticar y gestionar su cuenta de usuario</li>
             <li>Gestionar y organizar la información de su flotilla de vehículos</li>
             <li>Almacenar documentos e imágenes relacionadas con los vehículos</li>
+            <li>Sincronizar automáticamente datos entre dispositivos mediante Firebase</li>
             <li>Generar reportes y recordatorios de mantenimiento</li>
-            <li>Sincronizar datos entre dispositivos (cuando Firebase está habilitado)</li>
             <li>Monitorear fechas de vencimiento y enviar alertas de renovación de documentos</li>
-            <li>Facilitar la comunicación con conductores mediante llamadas telefónicas (solo cuando usted lo solicita explícitamente)</li>
+            <li>Administrar su plan de suscripción (Gratis, Básico, Pro o Empresarial)</li>
+            <li>Procesar pagos de suscripciones a través de Google Play</li>
         </ul>
 
         <div class="highlight">
@@ -119,16 +126,19 @@
 
         <h2>4. Almacenamiento de Datos</h2>
         
-        <h3>4.1 Almacenamiento Local</h3>
-        <ul>
-            <li>Los datos se almacenan localmente en su dispositivo</li>
+        <h3>4.1 Almacenamiento Local</h3> mediante SQLite</li>
             <li>Las imágenes y documentos se guardan en el almacenamiento interno de la aplicación</li>
-            <li>Los datos permanecen en su dispositivo y no son compartidos con terceros</li>
+            <li>Proporciona acceso sin conexión a sus datos</li>
         </ul>
 
-        <h3>4.2 Almacenamiento en la Nube (Opcional)</h3>
+        <h3>4.2 Almacenamiento en la Nube (Automático)</h3>
         <ul>
-            <li>Cuando Firebase está habilitado, los datos se sincronizan con Firebase Firestore y Firebase Storage</li>
+            <li>Todos los datos se sincronizan automáticamente con Firebase Firestore y Firebase Storage</li>
+            <li>Requiere autenticación con correo electrónico y contraseña</li>
+            <li>Los datos están protegidos con reglas de seguridad estrictas</li>
+            <li>Solo usted puede acceder a sus propios datos mediante su cuenta autenticada</li>
+            <li>Permite sincronización entre múltiples dispositivos</li>
+            <li>Backup automático en la nubecon Firebase Firestore y Firebase Storage</li>
             <li>Los datos en Firebase están protegidos con reglas de seguridad</li>
             <li>Solo los usuarios autorizados pueden acceder a estos datos</li>
         </ul>
@@ -171,8 +181,8 @@
                     <td>Almacenamiento</td>
                     <td>Guardar y leer imágenes/PDFs</td>
                     <td>Sí</td>
-                </tr>
-                <tr>
+                </tr>Autenticación y sincronización con Firebase</td>
+                    <td>Sí
                     <td>Internet</td>
                     <td>Sincronizar con Firebase (opcional)</td>
                     <td>No</td>
@@ -180,23 +190,44 @@
             </tbody>
         </table>
 
-        <h2>8. Servicios de Terceros</h2>
-        <p>La aplicación utiliza los siguientes servicios de terceros:</p>
-        <ul>
-            <li><strong>Firebase</strong> (Google): Para almacenamiento y sincronización en la nube
+        <h2>8. Servicios de Terc Authentication</strong> (Google): Para autenticación de usuarios
                 <br>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a>
+            </li>
+            <li><strong>Firebase Firestore</strong> (Google): Para almacenamiento de datos en la nube
+                <br>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a>
+            </li>
+            <li><strong>Firebase Storage</strong> (Google): Para almacenamiento de archivos e imágenes
+                <br>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a>
+            </li>
+            <li><strong>Google Play Billing</strong>: Para procesar pagos de suscripciones
+                <br>Sujeto a los <a href="https://payments.google.com/payments/apis-secure/u/0/get_legal_document?ldo=0&ldt=privacynotice" target="_blank">Términos de Servicio de Google Play</a>
             </li>
             <li><strong>Flutter</strong>: Framework de desarrollo de aplicaciones</li>
         </ul>
 
-        <h2>9. Uso Interno</h2>
+        <h2>9. Modelo de Suscripción</h2>
         <div class="highlight">
-            <p><strong>Esta aplicación está diseñada para uso interno y privado:</strong></p>
+            <p><strong>AutoGestión Max ofrece diferentes planes de suscripción:</strong></p>
             <ul>
-                <li>Destinada a un número limitado de usuarios (3-4 personas)</li>
-                <li>Distribución cerrada a través de Google Play Store</li>
-                <li>No es una aplicación pública</li>
-            </ul>
+                <li><strong>Plan Gratuito:</strong> 1 vehículo, funcionalidades básicas</li>
+                <li><strong>Plan Básico:</strong> Hasta 5 vehículos, sincronización en la nube, backup automático</li>
+                <li><strong>Plan Pro:</strong> Hasta 20 vehículos, reportes avanzados, soporte prioritario</li>
+                <ancelación de Suscripción</h2>
+        <p>Puede cancelar su suscripción en cualquier momento a través de Google Play Store:</p>
+        <ul>
+            <li>Abra la aplicación Google Play Store</li>
+            <li>Toque el menú y seleccione "Suscripciones"</li>
+            <li>Seleccione AutoGestión Max</li>
+            <li>Toque "Cancelar suscripción"</li>
+        </ul>
+        <p>Al cancelar, tendrá acceso a las funciones premium hasta el final del período de facturación actual.</p>
+3. Consentimiento</h2>
+        <p>Al crear una cuenta y2. Contacto</h2>
+        <div class="contact-info">
+            <p>Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos en:</p>
+            <ul>
+                <li><strong>Email:</strong> mtr123202@gmail.com</li>
+                <li><strong>Desarrollador:</strong> MahonDev
         </div>
 
         <h2>10. Cambios en la Política</h2>
