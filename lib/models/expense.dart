@@ -65,17 +65,31 @@ class Expense {
   }
 
   factory Expense.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      parsedDate = (json['date'] as Timestamp).toDate();
+    } catch (_) {
+      parsedDate = DateTime.now();
+    }
+
+    double parsedAmount;
+    try {
+      parsedAmount = (json['amount'] as num).toDouble();
+    } catch (_) {
+      parsedAmount = 0.0;
+    }
+
     return Expense(
-      id: json['id'],
+      id: json['id'] ?? '',
       userId: json['userId'] ?? '',
-      vehicleId: json['vehicleId'],
-      vehicleName: json['vehicleName'],
+      vehicleId: json['vehicleId'] ?? '',
+      vehicleName: json['vehicleName'] ?? json['vehicle'] ?? '',
       category: ExpenseCategory.values.firstWhere(
         (e) => e.name == json['category'],
         orElse: () => ExpenseCategory.other,
       ),
-      amount: (json['amount'] as num).toDouble(),
-      date: (json['date'] as Timestamp).toDate(),
+      amount: parsedAmount,
+      date: parsedDate,
       description: json['description'],
       receiptUrl: json['receiptUrl'],
       receiptType: json['receiptType'],

@@ -29,13 +29,24 @@ class InspectionRecord {
 
   // Crear desde JSON
   factory InspectionRecord.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      parsedDate = DateTime.parse(json['date'] as String);
+    } catch (_) {
+      parsedDate = DateTime.now();
+    }
+
     return InspectionRecord(
-      id: json['id'] as String,
-      date: DateTime.parse(json['date'] as String),
-      checklist: (json['checklist'] as List)
-          .map((item) => ChecklistItem.fromJson(item as Map<String, dynamic>))
-          .toList(),
-      inspectionPhotos: List<String>.from(json['inspectionPhotos'] as List),
+      id: json['id'] as String? ?? '',
+      date: parsedDate,
+      checklist:
+          (json['checklist'] as List?)
+              ?.map(
+                (item) => ChecklistItem.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      inspectionPhotos: List<String>.from(json['inspectionPhotos'] ?? []),
       notes: json['notes'] as String? ?? '',
     );
   }

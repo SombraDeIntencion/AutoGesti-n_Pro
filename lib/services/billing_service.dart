@@ -62,11 +62,19 @@ class BillingService {
         .orderBy('date', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map(
-                (doc) => Expense.fromJson(doc.data() as Map<String, dynamic>),
-              )
-              .toList();
+          final expenses = <Expense>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data['id'] == null || data['id'] == '') {
+                data['id'] = doc.id;
+              }
+              expenses.add(Expense.fromJson(data));
+            } catch (e) {
+              print('Error parsing expense ${doc.id}: $e');
+            }
+          }
+          return expenses;
         });
   }
 
@@ -81,11 +89,19 @@ class BillingService {
         .orderBy('date', descending: true)
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
-              .map(
-                (doc) => Expense.fromJson(doc.data() as Map<String, dynamic>),
-              )
-              .toList();
+          final expenses = <Expense>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data['id'] == null || data['id'] == '') {
+                data['id'] = doc.id;
+              }
+              expenses.add(Expense.fromJson(data));
+            } catch (e) {
+              print('Error parsing expense ${doc.id}: $e');
+            }
+          }
+          return expenses;
         });
   }
 
