@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <rect x="4" y="4" width="40" height="40" rx="10" fill="#5856D6"/>
+  <!-- Letter P built from paths (no text element — flutter_svg compatible) -->
+  <path d="M14 39 L14 9 L22 9 Q34 9 34 18 Q34 27 22 27 L20 27 L20 39 Z
+           M20 15 L22 15 Q28 15 28 18 Q28 21 22 21 L20 21 Z"
+        fill="white" fill-rule="evenodd"/>
+</svg>

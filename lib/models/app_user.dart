@@ -6,7 +6,7 @@ class AppUser {
   final String? photoUrl;
   final DateTime createdAt;
   final DateTime? lastLoginAt;
-  
+
   // Información de suscripción
   final String subscriptionTier; // 'free', 'basic', 'pro', 'enterprise'
   final int maxVehicles; // Número máximo de vehículos permitidos
@@ -35,11 +35,11 @@ class AppUser {
       email: data['email'] ?? '',
       displayName: data['displayName'],
       photoUrl: data['photoUrl'],
-      createdAt: data['createdAt'] != null 
-          ? DateTime.parse(data['createdAt']) 
+      createdAt: data['createdAt'] != null
+          ? DateTime.parse(data['createdAt'])
           : DateTime.now(),
-      lastLoginAt: data['lastLoginAt'] != null 
-          ? DateTime.parse(data['lastLoginAt']) 
+      lastLoginAt: data['lastLoginAt'] != null
+          ? DateTime.parse(data['lastLoginAt'])
           : null,
       subscriptionTier: data['subscriptionTier'] ?? 'free',
       maxVehicles: data['maxVehicles'] ?? 1,
@@ -79,9 +79,9 @@ class AppUser {
 
   /// Verificar si tiene suscripción activa (más de 1 vehículo)
   bool hasActiveSubscription() {
-    return isSubscriptionActive && 
-           subscriptionTier != 'free' &&
-           (subscriptionExpiresAt == null || 
+    return isSubscriptionActive &&
+        subscriptionTier != 'free' &&
+        (subscriptionExpiresAt == null ||
             subscriptionExpiresAt!.isAfter(DateTime.now()));
   }
 
@@ -107,7 +107,8 @@ class AppUser {
       subscriptionTier: subscriptionTier ?? this.subscriptionTier,
       maxVehicles: maxVehicles ?? this.maxVehicles,
       currentVehicles: currentVehicles ?? this.currentVehicles,
-      subscriptionExpiresAt: subscriptionExpiresAt ?? this.subscriptionExpiresAt,
+      subscriptionExpiresAt:
+          subscriptionExpiresAt ?? this.subscriptionExpiresAt,
       isSubscriptionActive: isSubscriptionActive ?? this.isSubscriptionActive,
     );
   }
@@ -142,111 +143,155 @@ class SubscriptionPlan {
 
   /// Planes predefinidos según la tabla de precios
   static List<SubscriptionPlan> get allPlans => [
-        SubscriptionPlan(
-          id: 'free',
-          name: 'Plan Gratuito',
-          minVehicles: 1,
-          maxVehicles: 1,
-          pricePerVehicle: 0,
-          monthlyTotal: 0,
-          description: 'Ideal para prueba o uso personal',
-          features: [
-            '1 vehículo gratis',
-            'Gestión básica de gastos',
-            'Historial de mantenimiento',
-            'Reportes básicos',
-          ],
-        ),
-        SubscriptionPlan(
-          id: 'micro',
-          name: 'Microempresa',
-          minVehicles: 2,
-          maxVehicles: 5,
-          pricePerVehicle: 175,
-          monthlyTotal: 175, // Ejemplo: 2 vehículos (1 gratis + 1 pagado)
-          description: 'Para microempresas y transporte escolar',
-          features: [
-            '2-5 vehículos',
-            'Primer vehículo GRATIS',
-            '\$175 MXN por vehículo adicional',
-            'Reportes avanzados',
-            'Exportar a PDF/Excel',
-          ],
-        ),
-        SubscriptionPlan(
-          id: 'small',
-          name: 'Pequeña Empresa',
-          minVehicles: 6,
-          maxVehicles: 10,
-          pricePerVehicle: 165,
-          monthlyTotal: 990, // Ejemplo: 6 vehículos (1 gratis + 5 pagados)
-          description: 'Empresas en crecimiento',
-          features: [
-            '6-10 vehículos',
-            'Primer vehículo GRATIS',
-            '\$165 MXN por vehículo adicional',
-            'Soporte prioritario',
-            'Múltiples usuarios',
-          ],
-        ),
-        SubscriptionPlan(
-          id: 'medium',
-          name: 'Empresa Mediana',
-          minVehicles: 11,
-          maxVehicles: 20,
-          pricePerVehicle: 155,
-          monthlyTotal: 1705, // Ejemplo: 11 vehículos (1 gratis + 10 pagados)
-          description: 'Control formal de flotilla',
-          features: [
-            '11-20 vehículos',
-            'Primer vehículo GRATIS',
-            '\$155 MXN por vehículo adicional',
-            'Dashboard personalizado',
-            'Alertas automáticas',
-          ],
-        ),
-        SubscriptionPlan(
-          id: 'large',
-          name: 'Empresa Grande',
-          minVehicles: 21,
-          maxVehicles: 35,
-          pricePerVehicle: 145,
-          monthlyTotal: 3045, // Ejemplo: 21 vehículos (1 gratis + 20 pagados)
-          description: 'Escala atractiva con ahorro',
-          features: [
-            '21-35 vehículos',
-            'Primer vehículo GRATIS',
-            '\$145 MXN por vehículo adicional',
-            'Integraciones API',
-            'Soporte dedicado',
-          ],
-        ),
-        SubscriptionPlan(
-          id: 'enterprise',
-          name: 'Flotilla Grande',
-          minVehicles: 36,
-          maxVehicles: 50,
-          pricePerVehicle: 135,
-          monthlyTotal: 4860, // Ejemplo: 36 vehículos (1 gratis + 35 pagados)
-          description: 'Máximo control antes de GPS',
-          features: [
-            '36-50 vehículos',
-            'Primer vehículo GRATIS',
-            '\$135 MXN por vehículo adicional',
-            'Consultor dedicado',
-            'Customización avanzada',
-          ],
-        ),
-      ];
+    SubscriptionPlan(
+      id: 'free',
+      name: 'Plan Gratuito',
+      minVehicles: 1,
+      maxVehicles: 1,
+      pricePerVehicle: 0,
+      monthlyTotal: 0,
+      description: 'Ideal para prueba o uso personal',
+      features: [
+        '1 vehículo gratis',
+        'Gestión básica de gastos',
+        'Historial de mantenimiento',
+        'Reportes básicos',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'starter2',
+      name: 'Starter',
+      minVehicles: 2,
+      maxVehicles: 3,
+      pricePerVehicle: 40,
+      monthlyTotal: 80,
+      description: 'Ideal para iniciar',
+      features: [
+        '2-3 vehículos',
+        'Primer vehículo GRATIS',
+        'Sincronización automática',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'starter5',
+      name: 'Starter Plus',
+      minVehicles: 4,
+      maxVehicles: 5,
+      pricePerVehicle: 33,
+      monthlyTotal: 130,
+      description: 'Perfecto para microempresas',
+      features: ['4-5 vehículos', 'Primer vehículo GRATIS', 'Sin limitaciones'],
+    ),
+    SubscriptionPlan(
+      id: 'small8',
+      name: 'Small',
+      minVehicles: 6,
+      maxVehicles: 8,
+      pricePerVehicle: 29,
+      monthlyTotal: 200,
+      description: 'Empresas en crecimiento',
+      features: [
+        '6-8 vehículos',
+        'Primer vehículo GRATIS',
+        'Alertas de vencimiento',
+        'Respaldo en la nube',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'small12',
+      name: 'Small Plus',
+      minVehicles: 9,
+      maxVehicles: 12,
+      pricePerVehicle: 25,
+      monthlyTotal: 280,
+      description: 'Historial ilimitado',
+      features: [
+        '9-12 vehículos',
+        'Primer vehículo GRATIS',
+        'Historial ilimitado',
+        'Alertas de vencimiento',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'medium17',
+      name: 'Medium',
+      minVehicles: 13,
+      maxVehicles: 17,
+      pricePerVehicle: 24,
+      monthlyTotal: 380,
+      description: 'Espacio ampliado en nube',
+      features: [
+        '13-17 vehículos',
+        'Primer vehículo GRATIS',
+        'Soporte por email',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'medium23',
+      name: 'Medium Plus',
+      minVehicles: 18,
+      maxVehicles: 23,
+      pricePerVehicle: 21,
+      monthlyTotal: 470,
+      description: 'Almacenamiento extendido',
+      features: [
+        '18-23 vehículos',
+        'Primer vehículo GRATIS',
+        'Almacenamiento extendido',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'large30',
+      name: 'Large',
+      minVehicles: 24,
+      maxVehicles: 30,
+      pricePerVehicle: 19,
+      monthlyTotal: 560,
+      description: 'Todas las funciones',
+      features: [
+        '24-30 vehículos',
+        'Primer vehículo GRATIS',
+        'Almacenamiento extendido',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'large40',
+      name: 'Large Plus',
+      minVehicles: 31,
+      maxVehicles: 40,
+      pricePerVehicle: 16,
+      monthlyTotal: 640,
+      description: 'Todas las funciones',
+      features: [
+        '31-40 vehículos',
+        'Primer vehículo GRATIS',
+        'Almacenamiento extendido',
+      ],
+    ),
+    SubscriptionPlan(
+      id: 'enterprise50',
+      name: 'Enterprise',
+      minVehicles: 41,
+      maxVehicles: 50,
+      pricePerVehicle: 14,
+      monthlyTotal: 680,
+      description: 'Solución completa',
+      features: [
+        '41-50 vehículos',
+        'Primer vehículo GRATIS',
+        'Almacenamiento ilimitado',
+      ],
+    ),
+  ];
 
   /// Calcular precio total según número de vehículos
   /// Recuerda: el primer vehículo siempre es gratis
   static double calculateMonthlyPrice(int numberOfVehicles) {
     if (numberOfVehicles <= 1) return 0;
-    
+
     final plan = getPlanForVehicles(numberOfVehicles);
     if (plan == null) return 0;
-    
+
     // Restar 1 porque el primer vehículo es gratis
     return (numberOfVehicles - 1) * plan.pricePerVehicle;
   }

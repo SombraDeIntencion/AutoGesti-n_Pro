@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 import '../models/vehicle.dart';
 import '../models/app_user.dart';
+import '../utils/rate_limiter.dart';
 import 'local_storage_service.dart';
 
 class FirebaseService {
@@ -112,6 +113,37 @@ class FirebaseService {
     }
   }
 
+  /// Establecer contador de vehículos del usuario a un valor específico
+  /// Útil para sincronizar el contador con la realidad del almacenamiento local
+  Future<void> setUserVehicleCount(String userId, int count) async {
+    if (!_useFirebase || usersCollection == null) return;
+
+    try {
+      final docRef = usersCollection!.doc(userId);
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(docRef);
+
+        if (!snapshot.exists) {
+          // Crear usuario si no existe
+          transaction.set(docRef, {
+            'email': '',
+            'createdAt': DateTime.now().toIso8601String(),
+            'subscriptionTier': 'free',
+            'maxVehicles': 1,
+            'currentVehicles': count.clamp(0, double.infinity).toInt(),
+            'isSubscriptionActive': true,
+          });
+        } else {
+          transaction.update(docRef, {
+            'currentVehicles': count.clamp(0, double.infinity).toInt(),
+          });
+        }
+      });
+    } catch (e) {
+      // Error al establecer contador de vehículos
+    }
+  }
+
   /// Actualizar último login del usuario
   Future<void> updateLastLogin(String userId) async {
     if (_useFirebase && usersCollection != null) {
@@ -138,9 +170,22 @@ class FirebaseService {
   Stream<List<Vehicle>> getVehicles(String userId) {
     if (_useFirebase) {
       return vehiclesCollectionForUser(userId)!.snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) {
-          return Vehicle.fromJson(doc.data() as Map<String, dynamic>);
-        }).toList();
+        final vehicles = <Vehicle>[];
+        for (final doc in snapshot.docs) {
+          try {
+            final data = doc.data() as Map<String, dynamic>;
+            // Inyectar el doc ID si no existe campo 'id'
+            if (data['id'] == null || data['id'] == '') {
+              data['id'] = doc.id;
+            }
+            vehicles.add(Vehicle.fromJson(data));
+          } catch (e) {
+            // Saltar documentos corruptos para no romper toda la lista
+            // ignore: avoid_print
+            print('Error parsing vehicle ${doc.id}: $e');
+          }
+        }
+        return vehicles;
       });
     } else {
       return _localStorage.getVehicles();
@@ -150,9 +195,17 @@ class FirebaseService {
   // Obtener un vehículo específico
   Future<Vehicle?> getVehicle(String id, String userId) async {
     if (_useFirebase) {
-      final doc = await vehiclesCollectionForUser(userId)!.doc(id).get();
-      if (doc.exists) {
-        return Vehicle.fromJson(doc.data() as Map<String, dynamic>);
+      try {
+        final doc = await vehiclesCollectionForUser(userId)!.doc(id).get();
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>;
+          if (data['id'] == null || data['id'] == '') {
+            data['id'] = doc.id;
+          }
+          return Vehicle.fromJson(data);
+        }
+      } catch (e) {
+        print('Error parsing vehicle $id: $e');
       }
       return null;
     } else {
@@ -184,7 +237,8 @@ class FirebaseService {
 
   // Liberar recursos
   void dispose() {
-    _localStorage.dispose();
+    // LocalStorageService es singleton, no debemos dispose aquí
+    // Solo limpiamos referencias locales si es necesario
   }
 
   // Subir imagen a Firebase Storage
@@ -194,13 +248,33 @@ class FirebaseService {
     String userId,
     String folder,
   ) async {
+    // Rate limiting: evitar subidas masivas
+    if (!RateLimiter().canProceed(
+      'upload_$userId',
+      minInterval: const Duration(seconds: 2),
+      maxCallsPerWindow: 20,
+      windowDuration: const Duration(minutes: 5),
+    )) {
+      throw Exception('Demasiadas subidas. Espera un momento.');
+    }
+
+    // Validar tamaño del archivo (máximo 10MB)
+    final fileSize = await file.length();
+    if (fileSize > 10 * 1024 * 1024) {
+      throw Exception('El archivo excede el tamaño máximo de 10MB');
+    }
+
     if (_useFirebase) {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
       final ref = _storage.ref().child(
         'autogestion_max/users/$userId/vehicles/$vehicleId/$folder/$fileName',
       );
 
-      await ref.putFile(file);
+      // Determinar content type según extensión del archivo
+      final ext = file.path.split('.').last.toLowerCase();
+      final contentType = _resolveContentType(ext);
+
+      await ref.putFile(file, SettableMetadata(contentType: contentType));
       return await ref.getDownloadURL();
     } else {
       return await _localStorage.uploadImage(file, vehicleId, folder);
@@ -214,16 +288,54 @@ class FirebaseService {
     String userId,
     String folder,
   ) async {
+    // Rate limiting
+    if (!RateLimiter().canProceed(
+      'upload_$userId',
+      minInterval: const Duration(seconds: 2),
+      maxCallsPerWindow: 20,
+      windowDuration: const Duration(minutes: 5),
+    )) {
+      throw Exception('Demasiadas subidas. Espera un momento.');
+    }
+
+    // Validar tamaño del archivo (máximo 10MB)
+    final fileSize = await file.length();
+    if (fileSize > 10 * 1024 * 1024) {
+      throw Exception('El archivo excede el tamaño máximo de 10MB');
+    }
+
     if (_useFirebase) {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.pdf';
       final ref = _storage.ref().child(
         'autogestion_max/users/$userId/vehicles/$vehicleId/$folder/$fileName',
       );
 
-      await ref.putFile(file);
+      await ref.putFile(file, SettableMetadata(contentType: 'application/pdf'));
       return await ref.getDownloadURL();
     } else {
       return await _localStorage.uploadPdf(file, vehicleId, folder);
+    }
+  }
+
+  /// Determina el content type según extensión del archivo
+  String _resolveContentType(String ext) {
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'heic':
+      case 'heif':
+        return 'image/heic';
+      case 'pdf':
+        return 'application/pdf';
+      default:
+        return 'application/octet-stream';
     }
   }
 
@@ -232,9 +344,19 @@ class FirebaseService {
     if (_useFirebase) {
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
-      final ref = _storage.ref().child('autogestion_max/$path/$fileName');
 
-      await ref.putFile(file);
+      // Si userId no está vacío, construir ruta con usuarios
+      final fullPath = userId.isNotEmpty
+          ? 'autogestion_max/users/$userId/$path/$fileName'
+          : 'autogestion_max/$path/$fileName';
+
+      final ref = _storage.ref().child(fullPath);
+
+      // Determinar content type según extensión
+      final ext = file.path.split('.').last.toLowerCase();
+      final contentType = _resolveContentType(ext);
+
+      await ref.putFile(file, SettableMetadata(contentType: contentType));
       return await ref.getDownloadURL();
     } else {
       // Para local storage, usar el path del archivo directamente

@@ -29,11 +29,12 @@ def create_gradient_background(size, color1, color2):
 def recolor_icon():
     """Recolorea el ícono con los nuevos colores de AutoGestión Max"""
     
-    # Colores nuevos
-    PRIMARY_BLUE = hex_to_rgb('#0088CC')
-    SECONDARY_CYAN = hex_to_rgb('#17A2B8')
-    ACCENT_ORANGE = hex_to_rgb('#FF9500')
+    # Colores nuevos - AutoGestión Max
+    PRIMARY_BLUE = hex_to_rgb('#0088CC')    # Azul brillante distintivo
+    SECONDARY_CYAN = hex_to_rgb('#00BFA5')  # Turquesa vibrante
+    ACCENT_ORANGE = hex_to_rgb('#FF9500')   # Naranja distintivo
     WHITE = (255, 255, 255)
+    DARK = (30, 30, 30)
     
     # Colores antiguos que queremos reemplazar (aproximados)
     OLD_BLUE = hex_to_rgb('#1E40AF')  # Azul antiguo
@@ -78,72 +79,95 @@ def recolor_icon():
         new_icon.paste(original, (0, 0), original)
         
     except FileNotFoundError:
-        # Si no existe el original, crear uno desde cero
-        print("Creando ícono desde cero...")
-        new_icon = create_gradient_background(size, SECONDARY_CYAN, PRIMARY_BLUE)
+        # Si no existe el original, crear uno desde cero - DISEÑO MAX
+        print("Creando ícono distintivo de AutoGestión MAX desde cero...")
+        # Fondo con degradado vibrante
+        new_icon = create_gradient_background(size, PRIMARY_BLUE, SECONDARY_CYAN)
         new_icon = new_icon.convert('RGBA')
         draw = ImageDraw.Draw(new_icon)
         
-        # Dibujar un auto simple
-        center_x, center_y = 512, 512
-        car_width, car_height = 400, 240
+        # Diseño distintivo para MAX: Auto moderno con énfasis en "MAX"
+        center_x, center_y = 512, 450
+        car_width, car_height = 450, 280
         
-        # Carrocería
+        # Sombra del auto
+        shadow_offset = 15
+        draw.rounded_rectangle(
+            [center_x - car_width//2 + shadow_offset, center_y - car_height//2 + shadow_offset,
+             center_x + car_width//2 + shadow_offset, center_y + car_height//2 + shadow_offset],
+            radius=50, fill=(0, 0, 0, 60)
+        )
+        
+        # Carrocería principal - blanco brillante
         car_rect = [
             center_x - car_width//2, center_y - car_height//2,
             center_x + car_width//2, center_y + car_height//2
         ]
-        draw.rounded_rectangle(car_rect, radius=40, fill=WHITE, outline=PRIMARY_BLUE, width=8)
+        draw.rounded_rectangle(car_rect, radius=50, fill=WHITE, outline=None)
         
-        # Ventanas
-        window_height = 80
-        window_y = center_y - car_height//2 + 40
-        # Ventana izquierda
+        # Parabrisas grande
+        window_height = 100
+        window_y = center_y - car_height//2 + 50
         draw.rounded_rectangle(
-            [center_x - 150, window_y, center_x - 30, window_y + window_height],
-            radius=15, fill=PRIMARY_BLUE + (100,)
-        )
-        # Ventana derecha
-        draw.rounded_rectangle(
-            [center_x + 30, window_y, center_x + 150, window_y + window_height],
-            radius=15, fill=PRIMARY_BLUE + (100,)
+            [center_x - 180, window_y, center_x + 180, window_y + window_height],
+            radius=20, fill=PRIMARY_BLUE
         )
         
-        # Ruedas
-        wheel_radius = 45
-        wheel_y = center_y + car_height//2 - 20
-        # Rueda izquierda
-        draw.ellipse(
-            [center_x - 130 - wheel_radius, wheel_y - wheel_radius,
-             center_x - 130 + wheel_radius, wheel_y + wheel_radius],
-            fill=(50, 50, 50), outline=(30, 30, 30), width=4
-        )
-        # Rueda derecha
-        draw.ellipse(
-            [center_x + 130 - wheel_radius, wheel_y - wheel_radius,
-             center_x + 130 + wheel_radius, wheel_y + wheel_radius],
-            fill=(50, 50, 50), outline=(30, 30, 30), width=4
-        )
-        
-        # Barra naranja de acento
+        # Franja inferior naranja distintiva (marca MAX)
         draw.rectangle(
-            [center_x - car_width//2 + 20, center_y + car_height//2 - 60,
-             center_x + car_width//2 - 20, center_y + car_height//2 - 45],
+            [center_x - car_width//2 + 40, center_y + car_height//2 - 70,
+             center_x + car_width//2 - 40, center_y + car_height//2 - 35],
             fill=ACCENT_ORANGE
         )
         
-        # Texto "MAX" sutil
+        # Ruedas modernas
+        wheel_radius = 50
+        wheel_y = center_y + car_height//2 - 15
+        # Rueda izquierda
+        draw.ellipse(
+            [center_x - 150 - wheel_radius, wheel_y - wheel_radius,
+             center_x - 150 + wheel_radius, wheel_y + wheel_radius],
+            fill=DARK, outline=WHITE, width=6
+        )
+        # Llanta interior
+        draw.ellipse(
+            [center_x - 150 - 25, wheel_y - 25,
+             center_x - 150 + 25, wheel_y + 25],
+            fill=(80, 80, 80)
+        )
+        
+        # Rueda derecha
+        draw.ellipse(
+            [center_x + 150 - wheel_radius, wheel_y - wheel_radius,
+             center_x + 150 + wheel_radius, wheel_y + wheel_radius],
+            fill=DARK, outline=WHITE, width=6
+        )
+        # Llanta interior
+        draw.ellipse(
+            [center_x + 150 - 25, wheel_y - 25,
+             center_x + 150 + 25, wheel_y + 25],
+            fill=(80, 80, 80)
+        )
+        
+        # Texto "MAX" grande y visible
         try:
-            # Intentar usar una fuente, si no está disponible, omitir
-            font = ImageFont.truetype("arial.ttf", 48)
+            # Usar fuente más grande para MAX
+            font_max = ImageFont.truetype("arial.ttf", 140)
             text = "MAX"
-            # Calcular posición centrada
-            bbox = draw.textbbox((0, 0), text, font=font)
+            bbox = draw.textbbox((0, 0), text, font=font_max)
             text_width = bbox[2] - bbox[0]
             text_x = (size[0] - text_width) // 2
-            text_y = size[1] - 120
-            draw.text((text_x, text_y), text, fill=WHITE + (80,), font=font)
+            text_y = center_y + car_height//2 + 100
+            
+            # Sombra del texto
+            draw.text((text_x + 4, text_y + 4), text, fill=(0, 0, 0, 100), font=font_max)
+            # Texto principal
+            draw.text((text_x, text_y), text, fill=WHITE, font=font_max)
         except:
+            # Si falla la fuente, dibujar rectángulo con "MAX"
+            max_rect = [350, 750, 674, 850]
+            draw.rounded_rectangle(max_rect, radius=20, fill=WHITE)
+            # Texto simple sin fuente
             pass
     
     # Guardar el nuevo ícono

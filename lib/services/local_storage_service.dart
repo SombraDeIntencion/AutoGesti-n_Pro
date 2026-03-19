@@ -6,6 +6,10 @@ import '../models/vehicle.dart';
 
 /// Servicio de almacenamiento local para desarrollo sin Firebase
 /// Este servicio simula Firebase pero guarda datos localmente
+///
+/// IMPORTANTE: Este servicio es un singleton. Para evitar fugas de memoria,
+/// asegúrate de que disposeInstance() sea llamado cuando la app se cierre
+/// o cuando cambies de contexto de almacenamiento.
 class LocalStorageService {
   // Singleton para evitar múltiples instancias y fugas de memoria
   static LocalStorageService? _instance;
@@ -15,10 +19,13 @@ class LocalStorageService {
   }
 
   final List<Vehicle> _vehicles = [];
+  // StreamController broadcast para permitir múltiples listeners
+  // NOTA: Debe cerrarse manualmente llamando a dispose() para evitar fugas de memoria
   final StreamController<List<Vehicle>> _vehiclesController =
       StreamController<List<Vehicle>>.broadcast();
 
   bool _isInitialized = false;
+  bool _isDisposed = false;
 
   // Constructor privado para singleton
   LocalStorageService._internal() {
@@ -32,8 +39,23 @@ class LocalStorageService {
 
   // Método para limpiar recursos cuando sea necesario
   static void disposeInstance() {
-    _instance?._vehiclesController.close();
-    _instance = null;
+    if (_instance != null && !_instance!._isDisposed) {
+      _instance!._isDisposed = true;
+      if (!_instance!._vehiclesController.isClosed) {
+        _instance!._vehiclesController.close();
+      }
+      _instance = null;
+    }
+  }
+
+  // Dispose instance method para uso no-estático
+  void dispose() {
+    if (!_isDisposed) {
+      _isDisposed = true;
+      if (!_vehiclesController.isClosed) {
+        _vehiclesController.close();
+      }
+    }
   }
 
   // Cargar vehículos desde almacenamiento local
@@ -68,13 +90,16 @@ class LocalStorageService {
 
   // Guardar vehículos en almacenamiento local
   Future<void> _saveVehicles() async {
+    if (_isDisposed) return;
     try {
       final directory = await getApplicationDocumentsDirectory();
       final file = File('${directory.path}/vehicles.json');
       final jsonList = _vehicles.map((vehicle) => vehicle.toJson()).toList();
       await file.writeAsString(json.encode(jsonList));
       // Emitir una copia inmutable para evitar modificaciones externas
-      _vehiclesController.add(List.unmodifiable(_vehicles));
+      if (!_isDisposed && !_vehiclesController.isClosed) {
+        _vehiclesController.add(List.unmodifiable(_vehicles));
+      }
     } catch (e) {
       // Error al guardar vehículos - silenciado para producción
     }
@@ -196,10 +221,5 @@ class LocalStorageService {
     } catch (e) {
       // Error al eliminar archivos del vehículo - silenciado para producción
     }
-  }
-
-  // Cerrar el stream controller al terminar
-  void dispose() {
-    _vehiclesController.close();
   }
 }

@@ -12,7 +12,48 @@ service cloud.firestore {
     }
 
     // ============================================
-    // DATOS DE AUTOGESTION MAX
+    // COLECCIÓN DE USUARIOS (estructura simple)
+    // ============================================
+    
+    // Colección de usuarios de AutoGestión Max
+    match /users/{userId} {
+      // Solo el usuario puede leer su propia información
+      allow read: if isOwner(userId);
+      
+      // Solo el usuario puede actualizar su propia información
+      allow update: if isOwner(userId);
+      
+      // La creación se permite durante el registro (AuthService)
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // No se permite eliminar usuarios desde el cliente
+      allow delete: if false;
+
+      // Subcolección de suscripciones (registro de compras)
+      match /subscriptions/{subscriptionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update, delete: if false;
+      }
+
+      // Subcolección de errores de compra (diagnóstico)
+      match /purchase_errors/{errorId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update, delete: if false;
+      }
+
+      // Subcolección de respuestas del quiz (analytics)
+      match /quiz_responses/{responseId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isOwner(userId);
+        allow delete: if false;
+      }
+    }
+
+    // ============================================
+    // DATOS DE AUTOGESTION MAX (estructura anidada)
     // REQUIERE AUTENTICACIÓN PARA TODO
     // ============================================
     
@@ -51,6 +92,24 @@ service cloud.firestore {
       allow delete: if isOwner(userId);
     }
     
+    // Colección de empleados - Cada usuario (gerente) tiene su propia colección
+    match /autogestion_max/data/users/{userId}/employees/{employeeId} {
+      // Solo el propietario (gerente) puede leer sus empleados
+      allow read: if isOwner(userId);
+      
+      // Solo el propietario puede crear empleados
+      allow create: if isOwner(userId) &&
+                       request.resource.data.keys().hasAll(['id', 'name']) &&
+                       request.resource.data.id is string &&
+                       request.resource.data.name is string;
+      
+      // Solo el propietario puede actualizar empleados (activar/desactivar)
+      allow update: if isOwner(userId);
+      
+      // Solo el propietario puede eliminar empleados
+      allow delete: if isOwner(userId);
+    }
+    
     // Colección de suscripciones (para registrar compras)
     match /autogestion_max/data/users/{userId}/subscriptions/{subscriptionId} {
       // Solo el usuario puede leer sus suscripciones
@@ -58,6 +117,21 @@ service cloud.firestore {
       
       // Solo el servidor puede escribir suscripciones (mediante Cloud Functions)
       allow write: if false;
+    }
+    
+    // Colección de gastos
+    match /autogestion_max/data/users/{userId}/expenses/{expenseId} {
+      // Solo el propietario puede leer sus gastos
+      allow read: if isOwner(userId);
+      
+      // Solo el propietario puede crear gastos
+      allow create: if isOwner(userId);
+      
+      // Solo el propietario puede actualizar gastos
+      allow update: if isOwner(userId);
+      
+      // Solo el propietario puede eliminar gastos
+      allow delete: if isOwner(userId);
     }
   }
 }

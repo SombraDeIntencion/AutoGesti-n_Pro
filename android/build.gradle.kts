@@ -37,6 +37,13 @@ subprojects {
                 jvmTarget = "17"
             }
         }
+        
+        // Configure JVM toolchain for all subprojects
+        extensions.findByType<JavaPluginExtension>()?.apply {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(17))
+            }
+        }
     }
 }
 

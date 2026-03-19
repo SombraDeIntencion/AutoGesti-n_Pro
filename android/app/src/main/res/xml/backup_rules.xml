@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Incluir preferencias generales -->
+    <!-- Incluir preferencias generales INCLUYENDO Firebase Auth -->
     <include domain="sharedpref" path="."/>
     
     <!-- Incluir archivos de la aplicación -->
@@ -9,7 +9,9 @@
     <!-- Incluir base de datos -->
     <include domain="database" path="."/>
     
-    <!-- Excluir archivos sensibles del backup -->
+    <!-- Excluir solo archivos sensibles específicos del backup -->
     <exclude domain="sharedpref" path="FlutterSecureStorage"/>
     <exclude domain="database" path="vehicles.db"/>
+    
+    <!-- IMPORTANTE: NO excluir com.google.firebase.auth para mantener sesión -->
 </full-backup-content>

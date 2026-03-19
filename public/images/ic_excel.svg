@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Base card -->
+  <rect x="6" y="2" width="36" height="44" rx="4" fill="#1B5E20"/>
+  <!-- Lighter top area -->
+  <rect x="6" y="2" width="36" height="24" rx="4" fill="#2E7D32"/>
+  <!-- Folded corner -->
+  <path d="M30 2 L42 14 L30 14 Z" fill="#1B5E20"/>
+  <path d="M30 2 L42 14 L30 14 Z" fill="rgba(0,0,0,0.15)"/>
+  <!-- Grid lines for spreadsheet feel -->
+  <line x1="13" y1="18" x2="35" y2="18" stroke="white" stroke-width="0.8" opacity="0.4"/>
+  <line x1="13" y1="22" x2="35" y2="22" stroke="white" stroke-width="0.8" opacity="0.4"/>
+  <line x1="24" y1="15" x2="24" y2="26" stroke="white" stroke-width="0.8" opacity="0.4"/>
+  <!-- White banner -->
+  <rect x="6" y="28" width="36" height="14" rx="0" fill="white" opacity="0.15"/>
+  <!-- XLS lettering (path-based, flutter_svg compatible) -->
+  <!-- X -->
+  <line x1="12" y1="30" x2="17.5" y2="40" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="17.5" y1="30" x2="12" y2="40" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- L -->
+  <line x1="20" y1="30" x2="20" y2="40" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="20" y1="40" x2="26" y2="40" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- S -->
+  <path d="M35 31 Q35 30 31.5 30 Q28 30 28 32.5 Q28 35 31.5 35 Q35 35 35 37.5 Q35 40 31.5 40 Q28 40 28 39" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <!-- X mark (cross) suggesting Excel logo -->
+  <line x1="17" y1="19" x2="27" y2="29" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+  <line x1="27" y1="19" x2="17" y2="29" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+</svg>

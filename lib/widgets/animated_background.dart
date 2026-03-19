@@ -115,7 +115,7 @@ class _BackgroundPainter extends CustomPainter {
     path1.lineTo(0, 0);
     path1.close();
 
-    paint.color = colors[0].withOpacity(0.1);
+    paint.color = colors[0].withValues(alpha: 0.1);
     canvas.drawPath(path1, paint);
 
     // Segunda forma (abajo derecha)
@@ -137,7 +137,7 @@ class _BackgroundPainter extends CustomPainter {
     path2.lineTo(size.width, size.height);
     path2.close();
 
-    paint.color = colors[1].withOpacity(0.1);
+    paint.color = colors[1].withValues(alpha: 0.1);
     canvas.drawPath(path2, paint);
 
     // Añadir puntos sutiles flotantes
@@ -148,7 +148,7 @@ class _BackgroundPainter extends CustomPainter {
       final y = size.height * 0.5 + math.sin(angle) * size.height * 0.3;
       final radius = 3.0 + math.sin(animation * 4 * math.pi + i) * 2;
       
-      paint.color = Colors.white.withOpacity(0.05);
+      paint.color = Colors.white.withValues(alpha: 0.05);
       canvas.drawCircle(Offset(x, y), radius, paint);
     }
   }

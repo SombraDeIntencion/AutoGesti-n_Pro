@@ -4,6 +4,8 @@ import 'dart:io';
 import '../models/vehicle.dart';
 import '../services/vehicle_service.dart';
 import '../services/media_service.dart';
+import '../utils/permissions_helper.dart';
+import '../l10n/app_localizations.dart';
 
 class VehicleFormScreen extends StatefulWidget {
   final Vehicle? vehicle;
@@ -26,6 +28,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
   late TextEditingController _plateController;
 
   String? _vehiclePhotoUrl;
+  File? _tempPhotoFile; // Archivo temporal antes de guardar
   bool _isLoading = false;
 
   @override
@@ -54,11 +57,12 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.vehicle != null;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Editar Vehículo' : 'Agregar Vehículo'),
-        backgroundColor: const Color(0xFF1E40AF),
+        title: Text(isEditing ? l10n.editVehicle : l10n.newVehicle),
+        backgroundColor: const Color(0xFF17A2B8),
         foregroundColor: Colors.white,
       ),
       body: Container(
@@ -66,7 +70,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1E40AF), Color(0xFF3B82F6)],
+            colors: [Color(0xFF17A2B8), Color(0xFF0088CC)],
           ),
         ),
         child: SafeArea(
@@ -87,11 +91,18 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                             width: 120,
                             height: 120,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: ClipOval(
-                              child: _vehiclePhotoUrl != null
+                              child: _tempPhotoFile != null
+                                  ? Image.file(
+                                      _tempPhotoFile!,
+                                      fit: BoxFit.cover,
+                                      width: 120,
+                                      height: 120,
+                                    )
+                                  : _vehiclePhotoUrl != null
                                   ? (_vehiclePhotoUrl!.startsWith('http')
                                         ? Image.network(
                                             _vehiclePhotoUrl!,
@@ -134,7 +145,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: const BoxDecoration(
-                                color: Color(0xFF06B6D4),
+                                color: Color(0xFF17A2B8),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -161,11 +172,11 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                       children: [
                         _buildTextField(
                           controller: _nameController,
-                          label: 'Nombre del Vehículo',
+                          label: l10n.vehicleName,
                           icon: Icons.label,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa el nombre';
+                              return l10n.pleaseEnterName;
                             }
                             return null;
                           },
@@ -173,28 +184,28 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _brandController,
-                          label: 'Marca',
+                          label: l10n.brand,
                           icon: Icons.branding_watermark,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _modelController,
-                          label: 'Modelo',
+                          label: l10n.model,
                           icon: Icons.car_repair,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _yearController,
-                          label: 'Año',
+                          label: l10n.year,
                           icon: Icons.calendar_today,
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa el año';
+                              return l10n.pleaseEnterYear;
                             }
                             final year = int.tryParse(value);
                             if (year == null || year < 1900 || year > 2100) {
-                              return 'Año inválido';
+                              return l10n.invalidYear;
                             }
                             return null;
                           },
@@ -202,11 +213,11 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _plateController,
-                          label: 'Placa',
+                          label: l10n.plate,
                           icon: Icons.credit_card,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa la placa';
+                              return l10n.pleaseEnterPlate;
                             }
                             return null;
                           },
@@ -220,7 +231,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                   ElevatedButton(
                     onPressed: _isLoading ? null : _saveVehicle,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF06B6D4),
+                      backgroundColor: const Color(0xFF17A2B8),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -238,7 +249,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
                             ),
                           )
                         : Text(
-                            isEditing ? 'Actualizar' : 'Guardar',
+                            isEditing ? l10n.updateButton : l10n.saveButton,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -265,7 +276,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF1E40AF)),
+        prefixIcon: Icon(icon, color: const Color(0xFF17A2B8)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -276,7 +287,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF1E40AF), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF17A2B8), width: 2),
         ),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
@@ -287,30 +298,49 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
   }
 
   Future<void> _takeVehiclePhoto() async {
+    // Solicitar permiso de cámara antes de tomar foto
+    if (!mounted) return;
+
+    final hasPermission = await PermissionsHelper.requestCameraPermission(
+      context,
+    );
+    if (!hasPermission) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.cameraPermissionNeeded),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       final photoFile = await _mediaService.takePhoto();
       if (photoFile != null) {
-        // Generar ID temporal para nuevo vehículo si no existe
-        final tempVehicleId = widget.vehicle?.id ?? const Uuid().v4();
-        
-        // Subir foto a Firebase Storage
-        final photoUrl = await _vehicleService.uploadImage(
-          photoFile,
-          tempVehicleId,
-          'photos',
-        );
-
-        setState(() {
-          _vehiclePhotoUrl = photoUrl;
-        });
+        // Guardar archivo temporalmente, se subirá cuando se guarde el vehículo
+        if (mounted) {
+          setState(() {
+            _tempPhotoFile = photoFile;
+            // Si es edición y ya tiene foto, mantener la URL existente
+            // Si es nuevo, la foto se subirá al guardar
+          });
+        }
       }
     } catch (e) {
       // Error al capturar foto
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al capturar foto: $e'),
+            content: Text('${l10n.errorCapturingPhoto}: $e'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -322,6 +352,11 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
       return;
     }
 
+    // Capturar l10n y messenger ANTES de cualquier async
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     setState(() {
       _isLoading = true;
     });
@@ -330,7 +365,65 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
       // Guardando vehículo
       final vehicleId = widget.vehicle?.id ?? const Uuid().v4();
       final userId = _vehicleService.currentUserId ?? '';
-      
+
+      // Si hay una foto temporal, subirla primero
+      String? finalPhotoUrl = _vehiclePhotoUrl;
+      if (_tempPhotoFile != null) {
+        // Para nuevo vehículo, crear el vehículo primero sin foto
+        // luego actualizar con la foto
+        if (widget.vehicle == null) {
+          // Crear vehículo temporal sin foto
+          final tempVehicle = Vehicle(
+            id: vehicleId,
+            userId: userId,
+            name: _nameController.text.trim(),
+            brand: _brandController.text.trim(),
+            model: _modelController.text.trim(),
+            year: int.parse(_yearController.text.trim()),
+            plate: _plateController.text.trim().toUpperCase(),
+          );
+
+          final success = await _vehicleService.saveVehicle(tempVehicle);
+          if (!success && mounted) {
+            final l10n = AppLocalizations.of(context);
+            setState(() {
+              _isLoading = false;
+            });
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.limitReachedUpgradeMessage),
+                backgroundColor: Colors.orange,
+                duration: const Duration(seconds: 4),
+              ),
+            );
+            return;
+          }
+        }
+
+        // Ahora subir la foto
+        try {
+          finalPhotoUrl = await _vehicleService.uploadImage(
+            _tempPhotoFile!,
+            vehicleId,
+            'photos',
+          );
+        } catch (e) {
+          // Si falla la subida de foto, continuar sin ella
+          if (mounted) {
+            final l10n = AppLocalizations.of(context);
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${l10n.warningCouldNotUploadPhoto}: $e'),
+                backgroundColor: Colors.orange,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        }
+      }
+
       final vehicle = Vehicle(
         id: vehicleId,
         userId: userId,
@@ -339,7 +432,7 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
         model: _modelController.text.trim(),
         year: int.parse(_yearController.text.trim()),
         plate: _plateController.text.trim().toUpperCase(),
-        photo: _vehiclePhotoUrl,
+        photo: finalPhotoUrl,
         insurance: widget.vehicle?.insurance,
         driver: widget.vehicle?.driver,
         contract: widget.vehicle?.contract,
@@ -351,45 +444,52 @@ class _VehicleFormScreenState extends State<VehicleFormScreen> {
       if (widget.vehicle != null) {
         success = await _vehicleService.updateVehicle(vehicle);
       } else {
-        success = await _vehicleService.saveVehicle(vehicle);
-        
-        // Si no se pudo guardar por límites freemium
-        if (!success && mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Has alcanzado el límite de vehículos de tu plan.\n'
-                'Actualiza tu suscripción para agregar más vehículos.',
+        // Si ya creamos el vehículo arriba, actualizarlo con la foto
+        if (_tempPhotoFile != null) {
+          success = await _vehicleService.updateVehicle(vehicle);
+        } else {
+          success = await _vehicleService.saveVehicle(vehicle);
+
+          // Si no se pudo guardar por límites freemium
+          if (!success && mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(l10n.limitReachedUpgradeMessage),
+                backgroundColor: Colors.orange,
+                duration: const Duration(seconds: 4),
               ),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 4),
-            ),
-          );
-          return;
+            );
+            return;
+          }
         }
       }
 
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        navigator.pop();
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
           SnackBar(
             content: Text(
-              widget.vehicle != null
-                  ? 'Vehículo actualizado correctamente'
-                  : 'Vehículo agregado correctamente',
+              widget.vehicle != null ? l10n.vehicleUpdated : l10n.vehicleAdded,
             ),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        messenger.clearSnackBars();
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l10n.error),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
     } finally {

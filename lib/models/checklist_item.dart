@@ -8,6 +8,11 @@ class ChecklistItem {
   ChecklistCategory category;
   ChecklistStatus status;
   List<String> photos; // URLs o paths de las fotos del componente
+  String notes; // Notas adicionales del item
+
+  // Alias para compatibilidad
+  String get title => name;
+  set title(String value) => name = value;
 
   ChecklistItem({
     required this.id,
@@ -15,6 +20,7 @@ class ChecklistItem {
     required this.category,
     this.status = ChecklistStatus.ok,
     this.photos = const [],
+    this.notes = '',
   });
 
   Map<String, dynamic> toJson() {
@@ -24,20 +30,24 @@ class ChecklistItem {
       'category': category.name,
       'status': status.name,
       'photos': photos,
+      'notes': notes,
     };
   }
 
   factory ChecklistItem.fromJson(Map<String, dynamic> json) {
     return ChecklistItem(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
       category: ChecklistCategory.values.firstWhere(
         (e) => e.name == json['category'],
+        orElse: () => ChecklistCategory.exterior,
       ),
       status: ChecklistStatus.values.firstWhere(
         (e) => e.name == json['status'],
+        orElse: () => ChecklistStatus.ok,
       ),
       photos: List<String>.from(json['photos'] ?? []),
+      notes: json['notes'] ?? '',
     );
   }
 
@@ -47,6 +57,7 @@ class ChecklistItem {
     ChecklistCategory? category,
     ChecklistStatus? status,
     List<String>? photos,
+    String? notes,
   }) {
     return ChecklistItem(
       id: id ?? this.id,
@@ -54,6 +65,7 @@ class ChecklistItem {
       category: category ?? this.category,
       status: status ?? this.status,
       photos: photos ?? this.photos,
+      notes: notes ?? this.notes,
     );
   }
 }

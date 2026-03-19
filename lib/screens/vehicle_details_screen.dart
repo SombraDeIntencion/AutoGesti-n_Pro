@@ -5,6 +5,7 @@ import '../widgets/document_section_tab.dart';
 import '../widgets/driver_section_tab.dart';
 import '../widgets/maintenance_section_tab.dart';
 import '../services/vehicle_service.dart';
+import '../l10n/app_localizations.dart';
 
 class VehicleDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -25,7 +26,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
   void initState() {
     super.initState();
     _vehicle = widget.vehicle;
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
   }
 
   @override
@@ -49,7 +50,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF1E40AF), Color(0xFF3B82F6), Color(0xFF06B6D4)],
+            colors: [Color(0xFF17A2B8), Color(0xFF0088CC)],
           ),
         ),
         child: SafeArea(
@@ -70,10 +71,18 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                             color: Colors.white,
                           ),
                         ),
-                        const Expanded(
-                          child: Text(
-                            'Volver a la Flotilla',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                        Expanded(
+                          child: Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              return Text(
+                                l10n.backToFleet,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -86,7 +95,7 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: const Icon(
@@ -142,10 +151,10 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
               // Tabs
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -158,10 +167,10 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                       isScrollable: true,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       indicator: BoxDecoration(
-                        color: Colors.white.withOpacity(0.25),
+                        color: Colors.white.withValues(alpha: 0.25),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: const Color(0xFF06B6D4),
+                          color: const Color(0xFF17A2B8),
                           width: 2,
                         ),
                       ),
@@ -179,48 +188,98 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                       ),
                       labelPadding: const EdgeInsets.symmetric(horizontal: 16),
                       tabs: [
-                        _buildTabWithStatus(
-                          'Seguro',
-                          Icons.shield,
-                          _vehicle.insurance,
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTabWithStatus(
+                              l10n.otherDocuments,
+                              Icons.folder_open,
+                              _vehicle.otherDocuments,
+                            );
+                          },
                         ),
-                        _buildTab('Conductor', Icons.person),
-                        _buildTab('Contrato', Icons.description),
-                        _buildTabWithStatus(
-                          'Tarjeta de Circ.',
-                          Icons.credit_card,
-                          _vehicle.circulationCard,
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTabWithStatus(
+                              l10n.ecologicalSticker,
+                              Icons.eco,
+                              _vehicle.ecologicalSticker,
+                            );
+                          },
                         ),
-                        _buildTab('Mantenimiento', Icons.build),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTabWithStatus(
+                              l10n.insurance,
+                              Icons.shield,
+                              _vehicle.insurance,
+                            );
+                          },
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTabWithStatus(
+                              l10n.circulationCard,
+                              Icons.credit_card,
+                              _vehicle.circulationCard,
+                            );
+                          },
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTab(l10n.contract, Icons.description);
+                          },
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTab(l10n.driver, Icons.person);
+                          },
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return _buildTab(l10n.maintenance, Icons.build);
+                          },
+                        ),
                       ],
                     ),
                     // Indicador visual de deslizamiento
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.chevron_left,
-                            color: Colors.white.withOpacity(0.6),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Desliza para ver más',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 11,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.chevron_right,
-                            color: Colors.white.withOpacity(0.6),
-                            size: 16,
-                          ),
-                        ],
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chevron_left,
+                                color: Colors.white.withValues(alpha: 0.6),
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                l10n.swipeToSeeMore,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                  fontSize: 11,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.white.withValues(alpha: 0.6),
+                                size: 16,
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -239,15 +298,94 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
+                      // Otros documentos
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return DocumentSectionTab(
+                            title: l10n.otherDocuments,
+                            section: _vehicle.otherDocuments,
+                            vehicleId: _vehicle.id,
+                            sectionName: 'otros_documentos',
+                            onUpdate: (updatedSection) {
+                              _updateVehicle(
+                                _vehicle.copyWith(
+                                  otherDocuments: updatedSection,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      // Engomado ecológico
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return DocumentSectionTab(
+                            title: l10n.ecologicalSticker,
+                            section: _vehicle.ecologicalSticker,
+                            vehicleId: _vehicle.id,
+                            sectionName: 'engomado_ecologico',
+                            onUpdate: (updatedSection) {
+                              _updateVehicle(
+                                _vehicle.copyWith(
+                                  ecologicalSticker: updatedSection,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                       // Seguro
-                      DocumentSectionTab(
-                        title: 'Seguro',
-                        section: _vehicle.insurance,
-                        vehicleId: _vehicle.id,
-                        sectionName: 'seguro',
-                        onUpdate: (updatedSection) {
-                          _updateVehicle(
-                            _vehicle.copyWith(insurance: updatedSection),
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return DocumentSectionTab(
+                            title: l10n.insurance,
+                            section: _vehicle.insurance,
+                            vehicleId: _vehicle.id,
+                            sectionName: 'seguro',
+                            onUpdate: (updatedSection) {
+                              _updateVehicle(
+                                _vehicle.copyWith(insurance: updatedSection),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      // Tarjeta de Circulación
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return DocumentSectionTab(
+                            title: l10n.circulationCard,
+                            section: _vehicle.circulationCard,
+                            vehicleId: _vehicle.id,
+                            sectionName: 'tarjeta_circulacion',
+                            onUpdate: (updatedSection) {
+                              _updateVehicle(
+                                _vehicle.copyWith(
+                                  circulationCard: updatedSection,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      // Contrato
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return DocumentSectionTab(
+                            title: l10n.contract,
+                            section: _vehicle.contract,
+                            vehicleId: _vehicle.id,
+                            sectionName: 'contrato',
+                            onUpdate: (updatedSection) {
+                              _updateVehicle(
+                                _vehicle.copyWith(contract: updatedSection),
+                              );
+                            },
                           );
                         },
                       ),
@@ -258,30 +396,6 @@ class _VehicleDetailsScreenState extends State<VehicleDetailsScreen>
                         onUpdate: (updatedDriver) {
                           _updateVehicle(
                             _vehicle.copyWith(driver: updatedDriver),
-                          );
-                        },
-                      ),
-                      // Contrato
-                      DocumentSectionTab(
-                        title: 'Contrato',
-                        section: _vehicle.contract,
-                        vehicleId: _vehicle.id,
-                        sectionName: 'contrato',
-                        onUpdate: (updatedSection) {
-                          _updateVehicle(
-                            _vehicle.copyWith(contract: updatedSection),
-                          );
-                        },
-                      ),
-                      // Tarjeta de Circulación
-                      DocumentSectionTab(
-                        title: 'Tarjeta de Circulación',
-                        section: _vehicle.circulationCard,
-                        vehicleId: _vehicle.id,
-                        sectionName: 'tarjeta_circulacion',
-                        onUpdate: (updatedSection) {
-                          _updateVehicle(
-                            _vehicle.copyWith(circulationCard: updatedSection),
                           );
                         },
                       ),

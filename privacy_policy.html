@@ -71,35 +71,83 @@
 <body>
     <div class="container">
         <h1>Política de Privacidad - AutoGestión Max</h1>
-        <p class="update-date"><strong>Última actualización:</strong> 30 de enero de 2026</p>
+        <p class="update-date"><strong>Última actualización:</strong> 15 de marzo de 2026</p>
 
         <h2>1. Introducción</h2>
         <p>Esta Política de Privacidad describe cómo AutoGestión Max ("nosotros", "la aplicación") recopila, usa y protege la información cuando utiliza nuestra aplicación móvil de gestión de flotilla de vehículos.</p>
 
         <h2>2. Información que Recopilamos</h2>
-        
-        <h3>2.1 Información del Vehículo</h3>
+
+        <h3>2.1 Información de la Cuenta del Usuario</h3>
+        <ul>
+            <li>Dirección de correo electrónico (para autenticación mediante Firebase Authentication)</li>
+            <li>Nombre (opcional, editable por el usuario)</li>
+            <li>Foto de perfil (opcional, almacenada en Firebase Storage)</li>
+            <li>Fecha de registro y último inicio de sesión</li>
+        </ul>
+
+        <h3>2.2 Información del Vehículo</h3>
         <ul>
             <li>Datos del vehículo (marca, modelo, año, placa)</li>
             <li>Fotografías de vehículos</li>
-            <li>Información de mantenimiento</li>
-            <li>Documentos relacionados (seguro, tarjeta de circulación, contratos)</li>
+            <li>Información de mantenimiento (historial, costos, kilometraje, fotos de partes)</li>
+            <li>Documentos relacionados (seguro, tarjeta de circulación, contratos, calcomanía ecológica)</li>
             <li>Fechas de vencimiento de documentos</li>
-            <li>Información del conductor (nombre, teléfono, correo electrónico)</li>
+            <li>Información del conductor asignado (nombre, teléfono, correo electrónico, fotos de licencia/identificación)</li>
+            <li>Historial de ediciones (nombre del editor, fecha y hora del cambio)</li>
         </ul>
 
-        <h3>2.2 Información Técnica</h3>
+        <h3>2.3 Información de Gastos y Comprobantes</h3>
         <ul>
-            <li>Archivos de registro y diagnósticos</li>
-            <li>Información del dispositivo</li>
+            <li>Registros de gastos por vehículo (monto, categoría, fecha, descripción, kilometraje)</li>
+            <li>Comprobantes fotográficos (fotos de tickets o facturas tomadas con la cámara o seleccionadas de la galería)</li>
+            <li>Comprobantes en formato PDF adjuntados como recibo de un gasto</li>
+            <li>Fotos del odómetro (para registro de kilometraje)</li>
+            <li>Datos extraídos de códigos QR de facturas electrónicas del SAT (RFC emisor/receptor, monto total, folio fiscal, fecha de emisión); estos datos <strong>solo se usan para autocompletar el formulario de gasto y no se envían a terceros</strong></li>
         </ul>
 
-        <h3>2.3 Permisos Utilizados</h3>
+        <h3>2.4 Inspecciones de Vehículos</h3>
         <ul>
-            <li><strong>Cámara:</strong> Para tomar fotografías de vehículos y documentos</li>
-            <li><strong>Almacenamiento:</strong> Para guardar y acceder a imágenes y documentos PDF</li>
-            <li><strong>Internet:</strong> Para sincronización con Firebase (opcional)</li>
+            <li>Registros de inspección con checklist de componentes (exterior, interior, motor, llantas)</li>
+            <li>Estado de cada componente inspeccionado (OK, requiere atención, urgente)</li>
+            <li>Fotografías por componente y notas del inspector</li>
+        </ul>
+
+        <h3>2.5 Información de Empleados</h3>
+        <ul>
+            <li>Número de empleado, nombre y estado (activo/inactivo)</li>
+            <li>Registro de qué empleado realiza cada edición en los vehículos (auditoría)</li>
+        </ul>
+
+        <h3>2.6 Información de Suscripción y Onboarding</h3>
+        <ul>
+            <li>Respuestas del cuestionario de personalización (cantidad de vehículos, tipo de uso, timestamp de respuesta)</li>
+            <li>Plan recomendado según sus respuestas</li>
+            <li>Estado de suscripción (plan activo, fecha de expiración)</li>
+            <li>Historial de compras procesadas a través de Google Play Billing</li>
+        </ul>
+
+        <h3>2.7 Información Técnica</h3>
+        <ul>
+            <li>Información del dispositivo (modelo, versión de Android) usada únicamente para diagnóstico en caso de errores reportados por el usuario</li>
+        </ul>
+
+        <h3>2.8 Información que NO Recopilamos</h3>
+        <ul>
+            <li><strong>No usamos Firebase Analytics ni Crashlytics</strong> — no recopilamos datos de uso automatizados</li>
+            <li><strong>No recopilamos ubicación</strong> — no accedemos al GPS ni a datos de localización</li>
+            <li><strong>No accedemos a contactos, calendario ni micrófono</strong></li>
+            <li><strong>No usamos identificadores de publicidad</strong> ni rastreadores de terceros</li>
+        </ul>
+
+        <h3>2.9 Permisos Utilizados</h3>
+        <ul>
+            <li><strong>Cámara:</strong> Para tomar fotografías de vehículos, documentos, comprobantes de gastos e inspecciones; y para escanear códigos QR de facturas electrónicas (SAT)</li>
+            <li><strong>Almacenamiento</strong> (solo Android 12 e inferior): Para guardar y acceder a imágenes y documentos PDF. En Android 13+, la aplicación utiliza el selector de fotos del sistema que no requiere este permiso</li>
+            <li><strong>Internet:</strong> Para comunicación con Firebase (requerido para el funcionamiento completo de la aplicación)</li>
+            <li><strong>Estado de red:</strong> Para verificar la conectividad a Internet y mostrar avisos de modo offline</li>
             <li><strong>Teléfono:</strong> Para facilitar llamadas telefónicas al conductor desde la aplicación (no se realizan llamadas sin su consentimiento explícito)</li>
+            <li><strong>Biometría</strong> (Huella Dactilar / Reconocimiento Facial): Para facilitar el acceso seguro a la aplicación mediante autenticación biométrica. Este permiso es completamente opcional y solo se activa si usted decide habilitarlo en la configuración de su perfil</li>
         </ul>
 
         <h2>3. Cómo Usamos la Información</h2>
@@ -107,10 +155,17 @@
         <ul>
             <li>Gestionar y organizar la información de su flotilla de vehículos</li>
             <li>Almacenar documentos e imágenes relacionadas con los vehículos</li>
-            <li>Generar reportes y recordatorios de mantenimiento</li>
-            <li>Sincronizar datos entre dispositivos (cuando Firebase está habilitado)</li>
-            <li>Monitorear fechas de vencimiento y enviar alertas de renovación de documentos</li>
+            <li>Registrar y clasificar gastos por vehículo (combustible, mantenimiento, seguros, peajes, estacionamientos, reparaciones)</li>
+            <li>Almacenar comprobantes de gastos (fotos de tickets y PDFs de facturas) en Firebase Storage</li>
+            <li>Generar reportes de gastos exportables en PDF y CSV/Excel, incluyendo imágenes de comprobantes cuando estén disponibles</li>
+            <li>Extraer automáticamente datos de facturas electrónicas mediante escaneo de códigos QR del SAT</li>
+            <li>Generar reportes de mantenimiento</li>
+            <li>Registrar inspecciones de vehículos con checklist de componentes y evidencia fotográfica</li>
+            <li>Sincronizar datos entre dispositivos a través de Firebase</li>
+            <li>Mostrar avisos visuales dentro de la aplicación cuando un documento esté próximo a vencer o haya vencido</li>
             <li>Facilitar la comunicación con conductores mediante llamadas telefónicas (solo cuando usted lo solicita explícitamente)</li>
+            <li>Personalizar la experiencia mediante el cuestionario de onboarding para recomendar el plan más adecuado a sus necesidades</li>
+            <li>Gestionar su suscripción y acceso a funciones según el plan contratado</li>
         </ul>
 
         <div class="highlight">
@@ -121,16 +176,17 @@
         
         <h3>4.1 Almacenamiento Local</h3>
         <ul>
-            <li>Los datos se almacenan localmente en su dispositivo</li>
-            <li>Las imágenes y documentos se guardan en el almacenamiento interno de la aplicación</li>
-            <li>Los datos permanecen en su dispositivo y no son compartidos con terceros</li>
+            <li>Las preferencias de configuración y tokens de sesión se guardan localmente mediante almacenamiento cifrado del sistema operativo (Android Keystore a través de <code>flutter_secure_storage</code> y <code>shared_preferences</code>)</li>
+            <li>La caché offline de Firestore permite acceder a datos ya cargados sin conexión</li>
+            <li>Las imágenes y documentos se guardan en el almacenamiento interno privado de la aplicación</li>
         </ul>
 
-        <h3>4.2 Almacenamiento en la Nube (Opcional)</h3>
+        <h3>4.2 Almacenamiento en la Nube (Requerido)</h3>
         <ul>
-            <li>Cuando Firebase está habilitado, los datos se sincronizan con Firebase Firestore y Firebase Storage</li>
+            <li>La aplicación utiliza Firebase como almacén principal de datos. Se requiere conexión a Internet para el funcionamiento completo</li>
+            <li>Los datos se almacenan en Firebase Firestore (base de datos) y Firebase Storage (archivos e imágenes)</li>
             <li>Los datos en Firebase están protegidos con reglas de seguridad</li>
-            <li>Solo los usuarios autorizados pueden acceder a estos datos</li>
+            <li>Solo el usuario autenticado puede acceder a sus propios datos</li>
         </ul>
 
         <h2>5. Seguridad de los Datos</h2>
@@ -138,10 +194,9 @@
         
         <h3>5.1 Seguridad Local</h3>
         <ul>
-            <li>Almacenamiento cifrado en el dispositivo mediante SQLite con cifrado</li>
-            <li>Base de datos local protegida por el sistema de seguridad de Android</li>
-            <li>Datos almacenados en el espacio privado de la aplicación (no accesibles por otras apps)</li>
-            <li>Caché de imágenes protegido en directorio privado</li>
+            <li>Tokens de sesión y credenciales almacenados con <code>flutter_secure_storage</code>, respaldado por Android Keystore (cifrado a nivel de hardware)</li>
+            <li>Preferencias de configuración guardadas con <code>shared_preferences</code> en el espacio privado de la aplicación (no accesible por otras apps)</li>
+            <li>Caché de imágenes protegido en directorio privado del sistema</li>
         </ul>
         
         <h3>5.2 Seguridad en la Nube (Firebase)</h3>
@@ -150,7 +205,7 @@
             <li>Autenticación obligatoria mediante Firebase Authentication</li>
             <li>Reglas de seguridad de Firestore que garantizan acceso solo a datos propios</li>
             <li>Firebase Storage con validación de tipos de archivo y tamaño</li>
-            <li>Copias de seguridad automáticas con cifrado en reposo</li>
+            <li>Datos en reposo protegidos por cifrado de Google Cloud Platform</li>
         </ul>
         
         <h3>5.3 Seguridad de la Aplicación</h3>
@@ -162,13 +217,23 @@
             <li>Actualizaciones de seguridad regulares de dependencias</li>
         </ul>
 
+        <h3>5.4 Seguridad Biométrica</h3>
+        <ul>
+            <li><strong>Autenticación local:</strong> La huella dactilar o reconocimiento facial se verifica localmente en su dispositivo mediante el hardware biométrico del fabricante</li>
+            <li><strong>No se almacenan datos biométricos:</strong> La aplicación no almacena, transmite ni tiene acceso a sus datos biométricos</li>
+            <li><strong>Control total del usuario:</strong> Puede habilitar o deshabilitar la autenticación biométrica en cualquier momento desde la configuración de su perfil</li>
+            <li><strong>Fallback seguro:</strong> Si la autenticación biométrica falla, siempre puede acceder mediante su contraseña</li>
+            <li><strong>Estándar de la industria:</strong> Utilizamos las API oficiales de Android (BiometricPrompt) que cumplen con los estándares de seguridad de Google</li>
+        </ul>
+
         <h2>6. Sus Derechos</h2>
         <p>Usted tiene derecho a:</p>
         <ul>
             <li>Acceder a todos sus datos almacenados</li>
             <li>Modificar o eliminar información</li>
-            <li>Exportar sus datos</li>
-            <li>Desinstalar la aplicación (elimina todos los datos locales)</li>
+            <li>Exportar sus datos en formato PDF o CSV</li>
+            <li>Solicitar la eliminación de su cuenta y datos en Firebase contactando al desarrollador</li>
+            <li>Desinstalar la aplicación (elimina los datos locales del dispositivo; los datos en Firebase persisten hasta que solicite su eliminación)</li>
         </ul>
 
         <h2>7. Resumen de Permisos</h2>
@@ -183,45 +248,83 @@
             <tbody>
                 <tr>
                     <td>Cámara</td>
-                    <td>Tomar fotos de vehículos y documentos</td>
+                    <td>Tomar fotos de vehículos, documentos y comprobantes de gastos</td>
                     <td>Sí</td>
+                </tr>
+                <tr>
+                    <td>Cámara (QR)</td>
+                    <td>Escanear códigos QR de facturas electrónicas del SAT</td>
+                    <td>No</td>
                 </tr>
                 <tr>
                     <td>Almacenamiento</td>
-                    <td>Guardar y leer imágenes/PDFs</td>
-                    <td>Sí</td>
+                    <td>Guardar y leer imágenes/PDFs (solo Android 12 e inferior)</td>
+                    <td>Condicional</td>
                 </tr>
                 <tr>
                     <td>Internet</td>
-                    <td>Sincronizar con Firebase (opcional)</td>
+                    <td>Comunicación con Firebase (requerido para el funcionamiento completo)</td>
+                    <td>Sí</td>
+                </tr>
+                <tr>
+                    <td>Estado de red</td>
+                    <td>Verificar conectividad y modo offline</td>
+                    <td>Sí</td>
+                </tr>
+                <tr>
+                    <td>Teléfono</td>
+                    <td>Facilitar llamadas al conductor</td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td>Biometría</td>
+                    <td>Autenticación biométrica (huella dactilar / reconocimiento facial Android)</td>
                     <td>No</td>
                 </tr>
             </tbody>
         </table>
 
-        <h2>8. Servicios de Terceros</h2>
-        <p>La aplicación utiliza los siguientes servicios de terceros:</p>
+        <h2>8. Datos de Menores</h2>
+        <p>Esta aplicación no está diseñada para menores de 13 años y no recopila intencionalmente información de menores.</p>
+
+        <h2>9. Retención de Datos</h2>
         <ul>
-            <li><strong>Firebase</strong> (Google): Para almacenamiento y sincronización en la nube
-                <br>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a>
-            </li>
-            <li><strong>Flutter</strong>: Framework de desarrollo de aplicaciones</li>
+            <li>Los datos locales se conservan hasta que usted los elimine o desinstale la aplicación</li>
+            <li>Los datos en Firebase se conservan indefinidamente hasta que el usuario los elimine desde la app o solicite la eliminación de su cuenta al desarrollador</li>
+            <li>Puede eliminar registros individuales en cualquier momento desde la propia aplicación</li>
         </ul>
 
-        <h2>9. Uso Interno</h2>
-        <div class="highlight">
-            <p><strong>Esta aplicación está diseñada para uso interno y privado:</strong></p>
-            <ul>
-                <li>Destinada a un número limitado de usuarios (3-4 personas)</li>
-                <li>Distribución cerrada a través de Google Play Store</li>
-                <li>No es una aplicación pública</li>
-            </ul>
-        </div>
+        <h2>10. Servicios de Terceros</h2>
+        <p>La aplicación utiliza los siguientes servicios de terceros:</p>
+        
+        <h3>10.1 Firebase (Google)</h3>
+        <ul>
+            <li><strong>Firebase Authentication:</strong> Para gestión segura de cuentas de usuario</li>
+            <li><strong>Firebase Firestore:</strong> Almacén principal de datos en la nube</li>
+            <li><strong>Firebase Storage:</strong> Almacenamiento de imágenes y documentos en la nube</li>
+            <li>Sujeto a la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad de Google</a></li>
+        </ul>
+        
+        <h3>10.2 Otros Servicios</h3>
+        <ul>
+            <li><strong>Google Play Billing:</strong> Para procesamiento de pagos de suscripciones — sujeto a los <a href="https://play.google.com/intl/es/about/play-terms/" target="_blank">Términos de Servicio de Google Play</a></li>
+            <li><strong>Flutter:</strong> Framework de desarrollo de aplicaciones móviles (no recopila datos de usuario)</li>
+        </ul>
+        <p>No utilizamos servicios de análisis de terceros como Google Analytics, Firebase Analytics ni Crashlytics.</p>
 
-        <h2>10. Cambios en la Política</h2>
+        <h2>11. Modelo de Distribución</h2>
+        <p>AutoGestión Max está disponible públicamente en Google Play Store con un modelo <strong>freemium</strong>:</p>
+        <ul>
+            <li><strong>Plan Gratuito:</strong> 1 vehículo</li>
+            <li><strong>Planes de Pago:</strong> De 2 a 50 vehículos según suscripción mensual o anual</li>
+            <li>Los pagos se procesan exclusivamente a través de Google Play Billing</li>
+            <li>No almacenamos datos de tarjetas de crédito ni información de pago directamente</li>
+        </ul>
+
+        <h2>12. Cambios en la Política</h2>
         <p>Podemos actualizar esta política ocasionalmente. Los cambios se notificarán mediante una actualización de la fecha de "Última actualización" en esta página.</p>
 
-        <h2>11. Contacto</h2>
+        <h2>13. Contacto</h2>
         <div class="contact-info">
             <p>Si tiene preguntas sobre esta Política de Privacidad, puede contactarnos en:</p>
             <ul>
@@ -231,7 +334,7 @@
             </ul>
         </div>
 
-        <h2>12. Consentimiento</h2>
+        <h2>14. Consentimiento</h2>
         <p>Al usar AutoGestión Max, usted consiente esta Política de Privacidad y acepta sus términos.</p>
     </div>
 </body>

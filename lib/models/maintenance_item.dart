@@ -5,6 +5,7 @@ class MaintenanceItem {
   List<String> oldPartsPhotos;
   List<String> newPartsPhotos;
   List<String> afterPhotos;
+  String? odometerPhoto; // Nueva: foto del odómetro
   int currentKm;
   int nextChangeKm;
   DateTime date;
@@ -16,6 +17,7 @@ class MaintenanceItem {
     this.oldPartsPhotos = const [],
     this.newPartsPhotos = const [],
     this.afterPhotos = const [],
+    this.odometerPhoto,
     this.currentKm = 0,
     this.nextChangeKm = 0,
     required this.date,
@@ -29,6 +31,7 @@ class MaintenanceItem {
       'oldPartsPhotos': oldPartsPhotos,
       'newPartsPhotos': newPartsPhotos,
       'afterPhotos': afterPhotos,
+      'odometerPhoto': odometerPhoto,
       'currentKm': currentKm,
       'nextChangeKm': nextChangeKm,
       'date': date.toIso8601String(),
@@ -36,16 +39,23 @@ class MaintenanceItem {
   }
 
   factory MaintenanceItem.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      parsedDate = DateTime.parse(json['date']);
+    } catch (_) {
+      parsedDate = DateTime.now();
+    }
     return MaintenanceItem(
-      id: json['id'],
+      id: json['id'] ?? '',
       what: json['what'] ?? '',
       problemPhotos: List<String>.from(json['problemPhotos'] ?? []),
       oldPartsPhotos: List<String>.from(json['oldPartsPhotos'] ?? []),
       newPartsPhotos: List<String>.from(json['newPartsPhotos'] ?? []),
       afterPhotos: List<String>.from(json['afterPhotos'] ?? []),
+      odometerPhoto: json['odometerPhoto'],
       currentKm: json['currentKm'] ?? 0,
       nextChangeKm: json['nextChangeKm'] ?? 0,
-      date: DateTime.parse(json['date']),
+      date: parsedDate,
     );
   }
 
@@ -56,6 +66,7 @@ class MaintenanceItem {
     List<String>? oldPartsPhotos,
     List<String>? newPartsPhotos,
     List<String>? afterPhotos,
+    String? odometerPhoto,
     int? currentKm,
     int? nextChangeKm,
     DateTime? date,
@@ -67,6 +78,7 @@ class MaintenanceItem {
       oldPartsPhotos: oldPartsPhotos ?? this.oldPartsPhotos,
       newPartsPhotos: newPartsPhotos ?? this.newPartsPhotos,
       afterPhotos: afterPhotos ?? this.afterPhotos,
+      odometerPhoto: odometerPhoto ?? this.odometerPhoto,
       currentKm: currentKm ?? this.currentKm,
       nextChangeKm: nextChangeKm ?? this.nextChangeKm,
       date: date ?? this.date,

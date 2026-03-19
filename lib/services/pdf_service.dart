@@ -17,37 +17,37 @@ class PdfService {
   ) async {
     final pdf = pw.Document();
 
-    // Cargar imágenes de red si existen
-    final List<pw.MemoryImage> inspectionImages = [];
-    for (final photoUrl in inspection.inspectionPhotos) {
-      try {
-        final image = await _loadNetworkImage(photoUrl);
-        if (image != null) {
-          inspectionImages.add(image);
-        }
-      } catch (e) {
-        // Error cargando imagen - continuar sin ella
+    // Cargar imágenes de inspección en paralelo
+    final List<Future<pw.MemoryImage?>> inspectionImageFutures = inspection
+        .inspectionPhotos
+        .map((photoUrl) => _loadNetworkImage(photoUrl))
+        .toList();
+
+    final loadedInspectionImages = await Future.wait(inspectionImageFutures);
+    final List<pw.MemoryImage> inspectionImages = loadedInspectionImages
+        .whereType<pw.MemoryImage>()
+        .toList();
+
+    // Cargar fotos de componentes del checklist en paralelo
+    final Map<String, List<pw.MemoryImage>> componentPhotos = {};
+
+    // Crear lista de futuros para todas las fotos de componentes
+    final List<Future<MapEntry<String, List<pw.MemoryImage>>>>
+    componentPhotoFutures = [];
+
+    for (final item in inspection.checklist) {
+      if (item.photos.isNotEmpty) {
+        componentPhotoFutures.add(_loadComponentPhotos(item.name, item.photos));
       }
     }
 
-    // Cargar fotos de componentes del checklist
-    final Map<String, List<pw.MemoryImage>> componentPhotos = {};
-    for (final item in inspection.checklist) {
-      if (item.photos.isNotEmpty) {
-        final List<pw.MemoryImage> itemImages = [];
-        for (final photoUrl in item.photos) {
-          try {
-            final image = await _loadNetworkImage(photoUrl);
-            if (image != null) {
-              itemImages.add(image);
-            }
-          } catch (e) {
-            // Error cargando foto - continuar sin ella
-          }
-        }
-        if (itemImages.isNotEmpty) {
-          componentPhotos[item.name] = itemImages;
-        }
+    // Esperar a que todas las fotos de componentes se carguen
+    final loadedComponentPhotos = await Future.wait(componentPhotoFutures);
+
+    // Agregar solo los componentes que tienen fotos cargadas exitosamente
+    for (final entry in loadedComponentPhotos) {
+      if (entry.value.isNotEmpty) {
+        componentPhotos[entry.key] = entry.value;
       }
     }
 
@@ -247,10 +247,11 @@ class PdfService {
 
   /// Grid de fotos
   pw.Widget _buildPhotoGrid(List<pw.MemoryImage> images) {
+    // Mostrar todas las fotos, no solo 6
     return pw.Wrap(
       spacing: 10,
       runSpacing: 10,
-      children: images.take(6).map((image) {
+      children: images.map((image) {
         return pw.Container(
           width: 150,
           height: 150,
@@ -291,7 +292,7 @@ class PdfService {
           ),
         ),
         pw.SizedBox(height: 5),
-        pw.Table.fromTextArray(
+        pw.TableHelper.fromTextArray(
           headerStyle: pw.TextStyle(
             fontSize: 10,
             fontWeight: pw.FontWeight.bold,
@@ -336,7 +337,7 @@ class PdfService {
         pw.Divider(),
         pw.SizedBox(height: 10),
         pw.Text(
-          'Reporte generado automáticamente - AutoGesti�n Max',
+          'Reporte generado automáticamente - AutoGesti�n Max',
           style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey600),
         ),
         pw.Text(
@@ -434,5 +435,257 @@ class PdfService {
       // Error cargando imagen - retornar null
     }
     return null;
+  }
+
+  /// Cargar fotos de un componente en paralelo
+  Future<MapEntry<String, List<pw.MemoryImage>>> _loadComponentPhotos(
+    String componentName,
+    List<String> photoUrls,
+  ) async {
+    // Cargar todas las fotos del componente en paralelo
+    final futures = photoUrls.map((url) => _loadNetworkImage(url)).toList();
+    final loadedImages = await Future.wait(futures);
+
+    // Filtrar las imágenes que se cargaron exitosamente
+    final validImages = loadedImages.whereType<pw.MemoryImage>().toList();
+
+    return MapEntry(componentName, validImages);
+  }
+
+  /// Generar PDF de inspección y devolver bytes
+  Future<List<int>> generateInspectionPdf({
+    required Vehicle vehicle,
+    required InspectionRecord inspection,
+  }) async {
+    final pdfFile = await generateInspectionReport(vehicle, inspection);
+    final bytes = await pdfFile.readAsBytes();
+    // Eliminar archivo temporal
+    await pdfFile.delete();
+    return bytes;
+  }
+
+  /// Generar PDF de mantenimiento y devolver bytes
+  Future<List<int>> generateMaintenancePdf({
+    required Vehicle vehicle,
+    required String sectionName,
+    required dynamic maintenanceItem,
+  }) async {
+    final pdf = pw.Document();
+
+    // Cargar fotos del mantenimiento
+    final List<pw.MemoryImage> problemPhotos = [];
+    final List<pw.MemoryImage> oldPartsPhotos = [];
+    final List<pw.MemoryImage> newPartsPhotos = [];
+    final List<pw.MemoryImage> afterPhotos = [];
+    pw.MemoryImage? odometerPhoto;
+
+    // Cargar todas las fotos en paralelo
+    final futures = <Future<pw.MemoryImage?>>[];
+
+    for (final photoUrl in maintenanceItem.problemPhotos) {
+      futures.add(_loadNetworkImage(photoUrl));
+    }
+    final loadedProblemPhotos = await Future.wait(futures);
+    problemPhotos.addAll(loadedProblemPhotos.whereType<pw.MemoryImage>());
+
+    futures.clear();
+    for (final photoUrl in maintenanceItem.oldPartsPhotos) {
+      futures.add(_loadNetworkImage(photoUrl));
+    }
+    final loadedOldPartsPhotos = await Future.wait(futures);
+    oldPartsPhotos.addAll(loadedOldPartsPhotos.whereType<pw.MemoryImage>());
+
+    futures.clear();
+    for (final photoUrl in maintenanceItem.newPartsPhotos) {
+      futures.add(_loadNetworkImage(photoUrl));
+    }
+    final loadedNewPartsPhotos = await Future.wait(futures);
+    newPartsPhotos.addAll(loadedNewPartsPhotos.whereType<pw.MemoryImage>());
+
+    futures.clear();
+    for (final photoUrl in maintenanceItem.afterPhotos) {
+      futures.add(_loadNetworkImage(photoUrl));
+    }
+    final loadedAfterPhotos = await Future.wait(futures);
+    afterPhotos.addAll(loadedAfterPhotos.whereType<pw.MemoryImage>());
+
+    if (maintenanceItem.odometerPhoto != null) {
+      odometerPhoto = await _loadNetworkImage(maintenanceItem.odometerPhoto);
+    }
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        build: (context) => [
+          // Encabezado
+          pw.Container(
+            decoration: pw.BoxDecoration(
+              color: PdfColor.fromHex('#0088CC'),
+              borderRadius: pw.BorderRadius.circular(8),
+            ),
+            padding: const pw.EdgeInsets.all(16),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'REPORTE DE MANTENIMIENTO',
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.white,
+                  ),
+                ),
+                pw.SizedBox(height: 8),
+                pw.Text(
+                  '${vehicle.name} - $sectionName',
+                  style: pw.TextStyle(fontSize: 14, color: PdfColors.white),
+                ),
+              ],
+            ),
+          ),
+          pw.SizedBox(height: 20),
+
+          // Información del vehículo
+          pw.Text(
+            'INFORMACIÓN DEL VEHÍCULO',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Table(
+            border: pw.TableBorder.all(color: PdfColors.grey400),
+            children: [
+              _buildTableRow('Vehículo:', vehicle.name),
+              _buildTableRow('Marca:', vehicle.brand),
+              _buildTableRow('Modelo:', vehicle.model),
+              _buildTableRow('Placa:', vehicle.plate),
+            ],
+          ),
+          pw.SizedBox(height: 20),
+
+          // Información del mantenimiento
+          pw.Text(
+            'DETALLES DEL MANTENIMIENTO',
+            style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Table(
+            border: pw.TableBorder.all(color: PdfColors.grey400),
+            children: [
+              _buildTableRow('Sección:', sectionName),
+              _buildTableRow('Descripción:', maintenanceItem.what),
+              _buildTableRow(
+                'Fecha:',
+                DateFormat('dd/MM/yyyy').format(maintenanceItem.date),
+              ),
+              _buildTableRow(
+                'Kilometraje actual:',
+                '${maintenanceItem.currentKm} km',
+              ),
+              if (maintenanceItem.nextChangeKm > 0)
+                _buildTableRow(
+                  'Próximo cambio:',
+                  '${maintenanceItem.nextChangeKm} km',
+                ),
+            ],
+          ),
+          pw.SizedBox(height: 20),
+
+          // Fotos del problema
+          if (problemPhotos.isNotEmpty) ...[
+            pw.Text(
+              'FOTOS DEL PROBLEMA',
+              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            _buildPhotoGrid(problemPhotos),
+            pw.SizedBox(height: 15),
+          ],
+
+          // Fotos de piezas viejas
+          if (oldPartsPhotos.isNotEmpty) ...[
+            pw.Text(
+              'PIEZAS REEMPLAZADAS',
+              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            _buildPhotoGrid(oldPartsPhotos),
+            pw.SizedBox(height: 15),
+          ],
+
+          // Fotos de piezas nuevas
+          if (newPartsPhotos.isNotEmpty) ...[
+            pw.Text(
+              'PIEZAS NUEVAS',
+              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            _buildPhotoGrid(newPartsPhotos),
+            pw.SizedBox(height: 15),
+          ],
+
+          // Fotos después del mantenimiento
+          if (afterPhotos.isNotEmpty) ...[
+            pw.Text(
+              'RESULTADO FINAL',
+              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            _buildPhotoGrid(afterPhotos),
+            pw.SizedBox(height: 15),
+          ],
+
+          // Foto del odómetro
+          if (odometerPhoto != null) ...[
+            pw.Text(
+              'ODÓMETRO',
+              style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 8),
+            pw.Container(
+              width: 200,
+              height: 150,
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey400),
+                borderRadius: pw.BorderRadius.circular(8),
+              ),
+              child: pw.ClipRRect(
+                horizontalRadius: 8,
+                verticalRadius: 8,
+                child: pw.Image(odometerPhoto, fit: pw.BoxFit.cover),
+              ),
+            ),
+          ],
+
+          // Pie de página
+          pw.SizedBox(height: 30),
+          pw.Divider(),
+          pw.Text(
+            'Generado por AutoGestión Max - ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}',
+            style: pw.TextStyle(fontSize: 8, color: PdfColors.grey),
+          ),
+        ],
+      ),
+    );
+
+    return await pdf.save();
+  }
+
+  pw.TableRow _buildTableRow(String label, String value) {
+    return pw.TableRow(
+      children: [
+        pw.Padding(
+          padding: const pw.EdgeInsets.all(8),
+          child: pw.Text(
+            label,
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10),
+          ),
+        ),
+        pw.Padding(
+          padding: const pw.EdgeInsets.all(8),
+          child: pw.Text(value, style: const pw.TextStyle(fontSize: 10)),
+        ),
+      ],
+    );
   }
 }

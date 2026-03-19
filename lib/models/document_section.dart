@@ -1,14 +1,18 @@
+import 'document_history_record.dart';
+
 class DocumentSection {
   List<String> photos;
   List<String> pdfs;
   String notes;
   DateTime? expirationDate;
+  List<DocumentHistoryRecord> history;
 
   DocumentSection({
     this.photos = const [],
     this.pdfs = const [],
     this.notes = '',
     this.expirationDate,
+    this.history = const [],
   });
 
   Map<String, dynamic> toJson() {
@@ -17,6 +21,7 @@ class DocumentSection {
       'pdfs': pdfs,
       'notes': notes,
       'expirationDate': expirationDate?.toIso8601String(),
+      'history': history.map((h) => h.toJson()).toList(),
     };
   }
 
@@ -28,6 +33,14 @@ class DocumentSection {
       expirationDate: json['expirationDate'] != null
           ? DateTime.parse(json['expirationDate'])
           : null,
+      history:
+          (json['history'] as List<dynamic>?)
+              ?.map(
+                (h) =>
+                    DocumentHistoryRecord.fromJson(h as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -36,12 +49,14 @@ class DocumentSection {
     List<String>? pdfs,
     String? notes,
     DateTime? expirationDate,
+    List<DocumentHistoryRecord>? history,
   }) {
     return DocumentSection(
       photos: photos ?? this.photos,
       pdfs: pdfs ?? this.pdfs,
       notes: notes ?? this.notes,
       expirationDate: expirationDate ?? this.expirationDate,
+      history: history ?? this.history,
     );
   }
 

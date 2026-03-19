@@ -1,5 +1,5 @@
 name: autogestion_max
-description: AutoGestión Max - Gestión de flotillas empresarial con modelo freemium
+description: AutoGestion Max - Gestion de flotillas empresarial con modelo freemium
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,8 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.1.5+6
-
+version: 2.3.0+66
 environment:
   sdk: ^3.9.2
 
@@ -49,6 +48,8 @@ dependencies:
   # Image handling
   image_picker: ^1.1.2
   file_picker: ^8.1.4
+  flutter_image_compress: ^2.3.0
+  mobile_scanner: ^5.2.3
   
   # Sharing
   share_plus: ^10.1.2
@@ -58,16 +59,25 @@ dependencies:
   pdf: ^3.11.1
   printing: ^5.13.4
   path_provider: ^2.1.5
+  path: ^1.9.0
+  archive: ^3.6.1
   
   # State management & utilities
   provider: ^6.1.2
   uuid: ^4.5.1
   intl: ^0.20.1
   http: ^1.2.2
+  shared_preferences: ^2.3.3
+  flutter_secure_storage: ^9.2.2
   
   # UI
   flutter_svg: ^2.0.10+1
   cached_network_image: ^3.4.1
+  fl_chart: ^0.69.0
+  
+  # Biometric Authentication
+  local_auth: ^2.3.0
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -95,26 +105,17 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - public/images/
-    - public/images/agregar-vehiculo.svg
-    - public/images/conductor.svg
-    - public/images/contrato.svg
-    - public/images/globo-de-agregar-mantenimiento.svg
-    - public/images/mantenimiento.svg
-    - public/images/menu-de-globo-de-mantenimiento.svg
-    - public/images/menu-mantenimiento.svg
-    - public/images/pantalla-principal.svg
-    - public/images/seguro.svg
-    - public/images/tarjeta-de-circulacion.svg
     - assets/images/icon.png
+    - assets/images/app_icon.png
 
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: true
-  image_path: "assets/images/icon.png"
+  image_path: "assets/images/app_icon.png"
   min_sdk_android: 24
   remove_alpha_ios: true
-  adaptive_icon_background: "#1E88E5"
-  adaptive_icon_foreground: "assets/images/icon.png"
+  adaptive_icon_background: "#17A2B8"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

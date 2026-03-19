@@ -21,11 +21,18 @@ class MaintenanceSectionData {
 
   factory MaintenanceSectionData.fromJson(Map<String, dynamic> json) {
     return MaintenanceSectionData(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
       items:
           (json['items'] as List?)
-              ?.map((item) => MaintenanceItem.fromJson(item))
+              ?.map((item) {
+                try {
+                  return MaintenanceItem.fromJson(item);
+                } catch (_) {
+                  return null;
+                }
+              })
+              .whereType<MaintenanceItem>()
               .toList() ??
           [],
     );

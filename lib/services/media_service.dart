@@ -1,22 +1,52 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class MediaService {
   final ImagePicker _imagePicker = ImagePicker();
+
+  // Compresión optimizada para móviles/tablets
+  // Reduce significativamente el tamaño sin perder calidad visible
+  Future<File?> _compressImage(File file) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final targetPath = path.join(
+        dir.path,
+        '${DateTime.now().millisecondsSinceEpoch}_compressed.jpg',
+      );
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: 75, // Calidad 75% - buen balance para móviles
+        minWidth: 1280, // Ancho máximo 1280px - perfecto para tablets
+        minHeight: 720, // Alto máximo 720px
+        format: CompressFormat.jpeg,
+      );
+
+      if (result != null) {
+        return File(result.path);
+      }
+      return file; // Si falla la compresión, retornar original
+    } catch (e) {
+      return file; // Si hay error, retornar archivo original
+    }
+  }
 
   // Tomar foto con la cámara
   Future<File?> takePhoto() async {
     try {
       final XFile? photo = await _imagePicker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1920,
-        maxHeight: 1080,
         imageQuality: 85,
       );
 
       if (photo != null) {
-        return File(photo.path);
+        final file = File(photo.path);
+        return await _compressImage(file);
       }
       return null;
     } catch (e) {
@@ -30,13 +60,12 @@ class MediaService {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1920,
-        maxHeight: 1080,
         imageQuality: 85,
       );
 
       if (image != null) {
-        return File(image.path);
+        final file = File(image.path);
+        return await _compressImage(file);
       }
       return null;
     } catch (e) {
@@ -49,12 +78,20 @@ class MediaService {
   Future<List<File>> pickMultipleImages() async {
     try {
       final List<XFile> images = await _imagePicker.pickMultiImage(
-        maxWidth: 1920,
-        maxHeight: 1080,
         imageQuality: 85,
       );
 
-      return images.map((image) => File(image.path)).toList();
+      // Comprimir todas las imágenes seleccionadas
+      final List<File> compressedFiles = [];
+      for (final image in images) {
+        final file = File(image.path);
+        final compressed = await _compressImage(file);
+        if (compressed != null) {
+          compressedFiles.add(compressed);
+        }
+      }
+
+      return compressedFiles;
     } catch (e) {
       // Error al seleccionar imágenes - silenciado para producción
       return [];

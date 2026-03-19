@@ -2,7 +2,7 @@
 <!-- Para Android 12+ (API 31+) -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- Incluir preferencias generales -->
+        <!-- Incluir preferencias generales INCLUYENDO Firebase Auth -->
         <include domain="sharedpref" path="."/>
         
         <!-- Incluir archivos de la aplicación -->
@@ -11,13 +11,15 @@
         <!-- Incluir base de datos -->
         <include domain="database" path="."/>
         
-        <!-- Excluir datos sensibles del backup en la nube -->
+        <!-- Excluir solo datos sensibles específicos del backup en la nube -->
         <exclude domain="sharedpref" path="FlutterSecureStorage"/>
         <exclude domain="database" path="vehicles.db"/>
+        
+        <!-- IMPORTANTE: NO excluir com.google.firebase.auth para mantener sesión -->
     </cloud-backup>
     
     <device-transfer>
-        <!-- Permitir transferencia de datos entre dispositivos -->
+        <!-- Permitir transferencia de datos entre dispositivos INCLUYENDO sesión -->
         <include domain="sharedpref" path="."/>
         <include domain="file" path="."/>
     </device-transfer>

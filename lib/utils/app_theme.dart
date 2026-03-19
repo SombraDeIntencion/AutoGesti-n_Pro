@@ -16,7 +16,7 @@ class AppTheme {
   static const Color successGreen = Color(0xFF10B981);
   static const Color warningYellow = Color(0xFFF59E0B);
   static const Color errorRed = Color(0xFFEF4444);
-  static const Color infoBlue = Color(0xFF3B82F6);
+  static const Color infoBlue = Color(0xFF0088CC);
 
   // Colores de texto
   static const Color textPrimary = Color(0xFF1F2937);
@@ -133,7 +133,7 @@ class AppTheme {
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey[100]!,
-        selectedColor: primaryBlue.withOpacity(0.2),
+        selectedColor: primaryBlue.withValues(alpha: 0.2),
         labelStyle: const TextStyle(color: textPrimary),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

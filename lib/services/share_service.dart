@@ -1,88 +1,133 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ShareService {
-  // Descargar archivo desde URL y guardarlo temporalmente
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // Descargar archivo desde URL de Firebase Storage y guardarlo temporalmente
   Future<String?> _downloadFileFromUrl(String url) async {
     try {
+      debugPrint('📥 ShareService: Intentando descargar: $url');
+
       // Si ya es una ruta local, devolverla directamente
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        debugPrint('✅ ShareService: Es una ruta local: $url');
         return url;
-      }
-
-      // Descargar el archivo con timeout
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 30));
-
-      if (response.statusCode != 200) {
-        throw Exception('Error al descargar archivo: ${response.statusCode}');
       }
 
       // Obtener el directorio temporal
       final tempDir = await getTemporaryDirectory();
 
-      // Extraer el nombre del archivo de la URL (antes de los parámetros de consulta)
+      // Extraer el nombre del archivo de la URL
       final uri = Uri.parse(url);
       String fileName = '';
+      String extension = '';
 
-      // Para URLs de Firebase Storage, extraer solo el nombre del archivo (última parte del path)
+      // Para URLs de Firebase Storage, extraer el nombre del archivo
       if (uri.pathSegments.isNotEmpty) {
-        // Tomar el último segmento y decodificar caracteres especiales
         String lastSegment = uri.pathSegments.last;
         fileName = Uri.decodeComponent(lastSegment);
 
-        // Si aún contiene barras (path completo), tomar solo la última parte
+        // Extraer la extensión ANTES de limpiar caracteres
+        if (fileName.contains('.')) {
+          final parts = fileName.split('.');
+          // La extensión puede tener query params (?token=...)
+          extension = parts.last.split('?').first.toLowerCase();
+          // Validar que sea una extensión real (máx 5 caracteres)
+          if (extension.length > 5 || extension.isEmpty) {
+            extension = '';
+          }
+        }
+
         if (fileName.contains('/')) {
           fileName = fileName.split('/').last;
         }
 
-        // Si el nombre tiene caracteres no válidos para Windows/Android, limpiarlos
+        // Limpiar caracteres inválidos del nombre
+        fileName = fileName
+            .split('.')
+            .first; // Tomar solo el nombre sin extensión
         fileName = fileName.replaceAll(RegExp(r'[<>:"|?*\\\/]'), '_');
       }
 
-      // Si no se puede extraer el nombre o no tiene extensión, usar uno genérico
-      if (fileName.isEmpty || !fileName.contains('.')) {
+      // Si no hay extensión detectada, intentar detectar por la URL o contenido
+      if (extension.isEmpty) {
         final timestamp = DateTime.now().millisecondsSinceEpoch;
-        // Intentar determinar la extensión del tipo de contenido
-        final contentType = response.headers['content-type'] ?? '';
-        String extension = '.bin';
-        if (contentType.contains('pdf')) {
-          extension = '.pdf';
-        } else if (contentType.contains('image/jpeg') ||
-            contentType.contains('image/jpg')) {
-          extension = '.jpg';
-        } else if (contentType.contains('image/png')) {
-          extension = '.png';
+
+        // Detectar tipo de archivo por la URL
+        final urlLower = url.toLowerCase();
+        if (urlLower.contains('.jpg') ||
+            urlLower.contains('.jpeg') ||
+            urlLower.contains('image%2Fjpeg')) {
+          extension = 'jpg';
+        } else if (urlLower.contains('.png') ||
+            urlLower.contains('image%2Fpng')) {
+          extension = 'png';
+        } else if (urlLower.contains('.pdf') ||
+            urlLower.contains('application%2Fpdf')) {
+          extension = 'pdf';
+        } else if (urlLower.contains('.zip') ||
+            urlLower.contains('application%2Fzip')) {
+          extension = 'zip';
+        } else {
+          // Último recurso: usar jpg como default para imágenes
+          extension = 'jpg';
         }
-        fileName = 'documento_$timestamp$extension';
+
+        fileName = fileName.isEmpty ? 'archivo_$timestamp' : fileName;
       }
 
-      // Crear el archivo temporal
-      final tempFile = File('${tempDir.path}/$fileName');
-      await tempFile.writeAsBytes(response.bodyBytes);
+      // Construir nombre final con extensión
+      final finalFileName = '$fileName.$extension';
+      final tempFile = File('${tempDir.path}/$finalFileName');
 
-      return tempFile.path;
+      debugPrint('📝 ShareService: Descargando como: $finalFileName');
+
+      // Usar Firebase Storage SDK para descargar (maneja autenticación automáticamente)
+      try {
+        final ref = _storage.refFromURL(url);
+        await ref.writeToFile(tempFile);
+        debugPrint('✅ ShareService: Descarga exitosa: ${tempFile.path}');
+        return tempFile.path;
+      } catch (e) {
+        // Si falla con Firebase SDK, el archivo podría no existir o no tener permisos
+        debugPrint('❌ ShareService: Error en Firebase SDK: $e');
+        return null;
+      }
     } catch (e) {
       // Error al descargar archivo
+      debugPrint('❌ ShareService: Error general al descargar: $e');
       return null;
     }
   }
 
   // Descargar múltiples archivos
   Future<List<String>> _downloadMultipleFiles(List<String> urls) async {
+    debugPrint('📦 ShareService: Descargando ${urls.length} archivos...');
     final List<String> localPaths = [];
+    int successCount = 0;
+    int failCount = 0;
 
-    for (final url in urls) {
+    for (int i = 0; i < urls.length; i++) {
+      final url = urls[i];
+      debugPrint('📥 Descargando archivo ${i + 1}/${urls.length}');
       final localPath = await _downloadFileFromUrl(url);
       if (localPath != null) {
         localPaths.add(localPath);
+        successCount++;
+        debugPrint('✅ Éxito: archivo ${i + 1}');
+      } else {
+        failCount++;
+        debugPrint('❌ Fallo: archivo ${i + 1}');
       }
     }
 
+    debugPrint(
+      '📊 ShareService: Resultado final - Éxitos: $successCount, Fallos: $failCount',
+    );
     return localPaths;
   }
 
@@ -96,17 +141,19 @@ class ShareService {
         throw Exception('No se pudo descargar el archivo');
       }
 
-      final url = Uri.parse('whatsapp://send?text=$message');
-
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url);
-        // Esperar un momento y luego compartir el archivo
-        await Future.delayed(const Duration(milliseconds: 500));
-        await Share.shareXFiles([XFile(localPath)], text: message);
-      } else {
-        // Si WhatsApp no está disponible, compartir directamente
-        await Share.shareXFiles([XFile(localPath)], text: message);
+      // Verificar que el archivo existe
+      final file = File(localPath);
+      if (!await file.exists()) {
+        throw Exception('El archivo descargado no existe: $localPath');
       }
+
+      debugPrint(
+        '📤 Compartiendo archivo: $localPath (${await file.length()} bytes)',
+      );
+
+      // Compartir directamente el archivo - el usuario podrá elegir WhatsApp
+      // Nota: No se incluye 'text' porque interfiere con el compartir de archivos en WhatsApp
+      await Share.shareXFiles([XFile(localPath)]);
     } catch (e) {
       throw Exception('Error al compartir: $e');
     }
@@ -127,20 +174,8 @@ class ShareService {
         throw Exception('No se pudo descargar el archivo');
       }
 
-      final emailUri = Uri(
-        scheme: 'mailto',
-        path: recipient,
-        query: _encodeQueryParameters({'subject': subject, 'body': body}),
-      );
-
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
-        // Compartir el archivo
-        await Share.shareXFiles([XFile(localPath)], subject: subject);
-      } else {
-        // Si no se puede abrir el cliente de correo, compartir directamente
-        await Share.shareXFiles([XFile(localPath)], subject: subject);
-      }
+      // Compartir el archivo directamente - el usuario podrá elegir la app de correo
+      await Share.shareXFiles([XFile(localPath)], subject: subject, text: body);
     } catch (e) {
       throw Exception('Error al compartir: $e');
     }
@@ -156,7 +191,18 @@ class ShareService {
         throw Exception('No se pudo descargar el archivo');
       }
 
-      await Share.shareXFiles([XFile(localPath)], text: message);
+      // Verificar que el archivo existe
+      final file = File(localPath);
+      if (!await file.exists()) {
+        throw Exception('El archivo descargado no existe: $localPath');
+      }
+
+      debugPrint(
+        '📤 Compartiendo archivo: $localPath (${await file.length()} bytes)',
+      );
+
+      // Nota: No se incluye 'text' porque interfiere con el compartir de archivos
+      await Share.shareXFiles([XFile(localPath)]);
     } catch (e) {
       throw Exception('Error al compartir: $e');
     }
@@ -168,29 +214,47 @@ class ShareService {
     String? message,
   }) async {
     try {
+      debugPrint(
+        '🚀 ShareService: Iniciando compartir ${filePaths.length} archivos',
+      );
+
       // Descargar todos los archivos si son URLs
       final localPaths = await _downloadMultipleFiles(filePaths);
 
+      debugPrint('📂 Archivos descargados localmente: ${localPaths.length}');
+
       if (localPaths.isEmpty) {
-        throw Exception('No se pudo descargar ningún archivo');
+        throw Exception(
+          'No se pudo descargar ningún archivo. Verifica la conexión a internet y los permisos de Firebase Storage.',
+        );
       }
 
-      await Share.shareXFiles(
-        localPaths.map((path) => XFile(path)).toList(),
-        text: message,
-      );
+      // Verificar que todos los archivos existen
+      final validFiles = <XFile>[];
+      for (final path in localPaths) {
+        final file = File(path);
+        if (await file.exists()) {
+          final size = await file.length();
+          debugPrint('✓ Archivo válido: $path ($size bytes)');
+          validFiles.add(XFile(path));
+        } else {
+          debugPrint('✗ Archivo no existe: $path');
+        }
+      }
+
+      if (validFiles.isEmpty) {
+        throw Exception(
+          'Ningún archivo válido para compartir. Los archivos descargados no existen.',
+        );
+      }
+
+      debugPrint('📤 Compartiendo ${validFiles.length} archivos válidos...');
+      // Nota: No se incluye 'text' porque interfiere con el compartir de archivos en WhatsApp
+      await Share.shareXFiles(validFiles);
+      debugPrint('✅ Compartir completado exitosamente');
     } catch (e) {
+      debugPrint('❌ Error en shareMultipleFiles: $e');
       throw Exception('Error al compartir: $e');
     }
-  }
-
-  // Codificar parámetros de query para URLs
-  String? _encodeQueryParameters(Map<String, String> params) {
-    return params.entries
-        .map(
-          (e) =>
-              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
-        )
-        .join('&');
   }
 }

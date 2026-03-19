@@ -27,4 +27,34 @@ service firebase.storage {
     // REQUIERE AUTENTICACIÓN PARA TODO
     // ============================================
     
-    // Archivos de usuarios autenticados de AutoGestión Max
+    // Archivos de usuarios (fotos, PDFs, etc.)
+    match /autogestion_max/users/{userId}/{allPaths=**} {
+      // Lectura: solo el propietario
+      allow read: if isOwner(userId);
+      
+      // Creación y actualización: propietario + validaciones de archivo
+      allow create, update: if isOwner(userId) 
+                   && isValidFileType() 
+                   && isValidFileSize();
+      
+      // Eliminación: solo el propietario (sin validación de tipo/tamaño)
+      allow delete: if isOwner(userId);
+    }
+    
+    // Fotos de perfil (profile_photos/{userId}.jpg)
+    match /profile_photos/{fileName} {
+      // Extraer userId del nombre de archivo (debe ser {userId}.jpg)
+      // Lectura: cualquier usuario autenticado puede ver fotos de perfil
+      allow read: if isSignedIn();
+      
+      // Escritura: solo si el nombre del archivo es {userId}.jpg y el usuario está autenticado
+      allow write: if isSignedIn() 
+                   && fileName == request.auth.uid + '.jpg'
+                   && request.resource.contentType.matches('image/.*')
+                   && request.resource.size < 5 * 1024 * 1024; // Máximo 5MB
+      
+      // Eliminación: solo si el nombre del archivo coincide con el uid del usuario
+      allow delete: if isSignedIn() && fileName == request.auth.uid + '.jpg';
+    }
+  }
+}

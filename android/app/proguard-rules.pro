@@ -1,4 +1,4 @@
-# ProGuard rules for AutoGestión Pro
+# ProGuard rules for AutoGestion Pro
 
 # No fallar por clases faltantes (R8)
 -ignorewarnings
@@ -149,6 +149,13 @@
 
 # URL Launcher
 -keep class io.flutter.plugins.urllauncher.** { *; }
+
+# FileProvider (para abrir archivos)
+-keep class androidx.core.content.FileProvider { *; }
+
+# Firebase Storage - mantener headers y metadata
+-keep class com.google.firebase.storage.** { *; }
+-keep interface com.google.firebase.storage.** { *; }
 
 # Prevenir eliminación de código usado dinámicamente
 -keepclassmembers class * {

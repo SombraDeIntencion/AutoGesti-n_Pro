@@ -15,7 +15,14 @@ class Vehicle {
   DriverSection driver;
   DocumentSection contract;
   DocumentSection circulationCard;
+  DocumentSection ecologicalSticker;
+  DocumentSection otherDocuments;
   MaintenanceData maintenance;
+
+  // Campos de auditoría
+  String? lastEditedBy; // Nombre del empleado que editó
+  String? lastEditedById; // ID del empleado
+  DateTime? lastEditedAt; // Fecha de última edición
 
   Vehicle({
     required this.id,
@@ -30,11 +37,18 @@ class Vehicle {
     DriverSection? driver,
     DocumentSection? contract,
     DocumentSection? circulationCard,
+    DocumentSection? ecologicalSticker,
+    DocumentSection? otherDocuments,
     MaintenanceData? maintenance,
+    this.lastEditedBy,
+    this.lastEditedById,
+    this.lastEditedAt,
   }) : insurance = insurance ?? DocumentSection(),
        driver = driver ?? DriverSection(),
        contract = contract ?? DocumentSection(),
        circulationCard = circulationCard ?? DocumentSection(),
+       ecologicalSticker = ecologicalSticker ?? DocumentSection(),
+       otherDocuments = otherDocuments ?? DocumentSection(),
        maintenance = maintenance ?? MaintenanceData();
 
   Map<String, dynamic> toJson() {
@@ -51,20 +65,35 @@ class Vehicle {
       'driver': driver.toJson(),
       'contract': contract.toJson(),
       'circulationCard': circulationCard.toJson(),
+      'ecologicalSticker': ecologicalSticker.toJson(),
+      'otherDocuments': otherDocuments.toJson(),
       'maintenance': maintenance.toJson(),
+      'lastEditedBy': lastEditedBy,
+      'lastEditedById': lastEditedById,
+      'lastEditedAt': lastEditedAt?.toIso8601String(),
     };
   }
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
+    String vehicleName = json['name'] as String? ?? '';
+    if (vehicleName.isEmpty) {
+      final b = json['brand'] as String? ?? '';
+      final m = json['model'] as String? ?? '';
+      vehicleName = '$b $m'.trim();
+    }
+    if (vehicleName.isEmpty) {
+      vehicleName = json['plate'] as String? ?? 'Sin nombre';
+    }
+
     return Vehicle(
-      id: json['id'],
-      userId: json['userId'] ?? '', // Compatibilidad con datos antiguos
-      name: json['name'],
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      name: vehicleName,
       brand: json['brand'] ?? '',
       model: json['model'] ?? '',
-      year: json['year'],
-      plate: json['plate'],
-      photo: json['photo'],
+      year: json['year'] ?? DateTime.now().year,
+      plate: json['plate'] ?? '',
+      photo: json['photo'] ?? json['photoUrl'],
       insurance: json['insurance'] != null
           ? DocumentSection.fromJson(json['insurance'])
           : null,
@@ -77,8 +106,19 @@ class Vehicle {
       circulationCard: json['circulationCard'] != null
           ? DocumentSection.fromJson(json['circulationCard'])
           : null,
+      ecologicalSticker: json['ecologicalSticker'] != null
+          ? DocumentSection.fromJson(json['ecologicalSticker'])
+          : null,
+      otherDocuments: json['otherDocuments'] != null
+          ? DocumentSection.fromJson(json['otherDocuments'])
+          : null,
       maintenance: json['maintenance'] != null
           ? MaintenanceData.fromJson(json['maintenance'])
+          : null,
+      lastEditedBy: json['lastEditedBy'],
+      lastEditedById: json['lastEditedById'],
+      lastEditedAt: json['lastEditedAt'] != null
+          ? DateTime.parse(json['lastEditedAt'])
           : null,
     );
   }
@@ -96,7 +136,12 @@ class Vehicle {
     DriverSection? driver,
     DocumentSection? contract,
     DocumentSection? circulationCard,
+    DocumentSection? ecologicalSticker,
+    DocumentSection? otherDocuments,
     MaintenanceData? maintenance,
+    String? lastEditedBy,
+    String? lastEditedById,
+    DateTime? lastEditedAt,
   }) {
     return Vehicle(
       id: id ?? this.id,
@@ -111,7 +156,12 @@ class Vehicle {
       driver: driver ?? this.driver,
       contract: contract ?? this.contract,
       circulationCard: circulationCard ?? this.circulationCard,
+      ecologicalSticker: ecologicalSticker ?? this.ecologicalSticker,
+      otherDocuments: otherDocuments ?? this.otherDocuments,
       maintenance: maintenance ?? this.maintenance,
+      lastEditedBy: lastEditedBy ?? this.lastEditedBy,
+      lastEditedById: lastEditedById ?? this.lastEditedById,
+      lastEditedAt: lastEditedAt ?? this.lastEditedAt,
     );
   }
 }

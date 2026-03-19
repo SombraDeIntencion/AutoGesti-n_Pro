@@ -88,9 +88,9 @@ class MemoryUtils {
   /// Configurar límites de caché de imágenes
   static void configureImageCache() {
     // Limitar el tamaño máximo del caché de imágenes
-    // Valor por defecto: 1000 imágenes o 100MB
-    imageCache.maximumSize = 100; // Reducir a 100 imágenes
-    imageCache.maximumSizeBytes = 50 << 20; // Máximo 50MB
+    // Valores optimizados para Android: balance entre rendimiento y memoria
+    imageCache.maximumSize = 150; // 150 imágenes en caché
+    imageCache.maximumSizeBytes = 100 << 20; // Máximo 100MB
   }
 
   /// Log de información de memoria (solo en debug)

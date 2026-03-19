@@ -69,6 +69,8 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                   child: Image.network(
                     widget.photoUrls[index],
                     fit: BoxFit.contain,
+                    cacheWidth: 1200, // Optimizar para Android/tablets
+                    cacheHeight: 1600,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Center(
@@ -170,7 +172,7 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
                       shape: BoxShape.circle,
                       color: _currentIndex == index
                           ? Colors.white
-                          : Colors.white.withOpacity(0.4),
+                          : Colors.white.withValues(alpha: 0.4),
                     ),
                   ),
                 ),

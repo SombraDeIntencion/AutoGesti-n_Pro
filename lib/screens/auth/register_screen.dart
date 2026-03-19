@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/animated_background.dart';
+import '../../l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -44,13 +45,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              '¡Cuenta creada! Revisa tu email para verificar tu cuenta',
-            ),
+          SnackBar(
+            content: Text(l10n.accountCreated),
             backgroundColor: AppTheme.successGreen,
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 4),
           ),
         );
         // No hacemos pop, el AuthGate detectará el usuario y mostrará EmailVerificationScreen
@@ -73,6 +73,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: AnimatedBackground(
         colors: const [AppTheme.backgroundLight, AppTheme.backgroundDark],
@@ -108,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              'Crear Cuenta',
+                              l10n.createAccount,
                               style: Theme.of(context).textTheme.headlineSmall
                                   ?.copyWith(fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
@@ -119,13 +121,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             // Nombre
                             TextFormField(
                               controller: _nameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Nombre',
-                                prefixIcon: Icon(Icons.person_outlined),
+                              decoration: InputDecoration(
+                                labelText: l10n.name,
+                                prefixIcon: const Icon(Icons.person_outlined),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Ingresa tu nombre';
+                                  return l10n.enterName;
                                 }
                                 return null;
                               },
@@ -137,16 +139,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon: Icon(Icons.email_outlined),
+                              decoration: InputDecoration(
+                                labelText: l10n.email,
+                                prefixIcon: const Icon(Icons.email_outlined),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Ingresa tu email';
+                                  return l10n.enterEmail;
                                 }
                                 if (!value.contains('@')) {
-                                  return 'Email inválido';
+                                  return l10n.invalidEmail;
                                 }
                                 return null;
                               },
@@ -159,7 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _passwordController,
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
-                                labelText: 'Contraseña',
+                                labelText: l10n.password,
                                 prefixIcon: const Icon(Icons.lock_outlined),
                                 suffixIcon: IconButton(
                                   icon: Icon(
@@ -177,10 +179,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Ingresa una contraseña';
+                                  return l10n.enterPassword;
                                 }
                                 if (value.length < 6) {
-                                  return 'Mínimo 6 caracteres';
+                                  return l10n.passwordMinLength;
                                 }
                                 return null;
                               },
@@ -193,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _confirmPasswordController,
                               obscureText: _obscureConfirmPassword,
                               decoration: InputDecoration(
-                                labelText: 'Confirmar Contraseña',
+                                labelText: l10n.confirmPassword,
                                 prefixIcon: const Icon(Icons.lock_outlined),
                                 suffixIcon: IconButton(
                                   icon: Icon(
@@ -211,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               validator: (value) {
                                 if (value != _passwordController.text) {
-                                  return 'Las contraseñas no coinciden';
+                                  return l10n.passwordsDontMatch;
                                 }
                                 return null;
                               },
@@ -242,9 +244,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             ),
                                       ),
                                     )
-                                  : const Text(
-                                      'Crear Cuenta',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.createAccount,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -262,10 +264,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.successGreen.withOpacity(0.2),
+                      color: AppTheme.successGreen.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.successGreen.withOpacity(0.3),
+                        color: AppTheme.successGreen.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Column(
@@ -277,7 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '¡Comienza Gratis!',
+                          l10n.startFree,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -286,9 +288,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '✓ 1 vehículo gratis\n✓ Todas las funciones básicas\n✓ Sin tarjeta requerida',
+                          '✓ ${l10n.freeVehicle}\n✓ ${l10n.allBasicFeatures}\n✓ ${l10n.noCardRequired}',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                           textAlign: TextAlign.center,
                         ),
